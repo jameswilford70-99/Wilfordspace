@@ -19,6 +19,8 @@ services:
     restart: unless-stopped
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-wilfordspace}:${POSTGRES_PASSWORD:-change-this-password}@db:5432/${POSTGRES_DB:-wilfordspace}
+      SECRET_KEY: ${SECRET_KEY:-change-this-development-secret}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
     depends_on:
       db:
         condition: service_healthy
