@@ -119,6 +119,45 @@ async def startup():
                 joined_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
                 PRIMARY KEY (household_id, user_id)
             );
+
+            CREATE TABLE IF NOT EXISTS recipes (
+                id BIGSERIAL PRIMARY KEY,
+                household_id BIGINT NOT NULL REFERENCES households(id)
+                    ON DELETE CASCADE,
+                created_by BIGINT NOT NULL REFERENCES users(id),
+                title VARCHAR(250) NOT NULL,
+                description TEXT NOT NULL DEFAULT '',
+                servings INTEGER NOT NULL DEFAULT 4,
+                prep_time_minutes INTEGER,
+                cook_time_minutes INTEGER,
+                source_url TEXT,
+                created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+            );
+
+            CREATE TABLE IF NOT EXISTS recipe_ingredients (
+                id BIGSERIAL PRIMARY KEY,
+                recipe_id BIGINT NOT NULL REFERENCES recipes(id)
+                    ON DELETE CASCADE,
+                quantity VARCHAR(50) NOT NULL DEFAULT '',
+                unit VARCHAR(50) NOT NULL DEFAULT '',
+                name VARCHAR(250) NOT NULL,
+                position INTEGER NOT NULL DEFAULT 0
+            );
+
+            CREATE TABLE IF NOT EXISTS recipe_instructions (
+                id BIGSERIAL PRIMARY KEY,
+                recipe_id BIGINT NOT NULL REFERENCES recipes(id)
+                    ON DELETE CASCADE,
+                step_number INTEGER NOT NULL,
+                instruction TEXT NOT NULL
+            );
+
+            CREATE INDEX IF NOT EXISTS recipes_household_id_idx
+                ON recipes(household_id);
+
+            CREATE INDEX IF NOT EXISTS recipes_title_idx
+                ON recipes(title);
             """
         )
     finally:
@@ -291,3 +330,247 @@ async def me(
 ):
     user = await get_current_user(wilfordspace_session)
     return {"user": user}
+
+
+
+class IngredientRequest(BaseModel):
+    quantity: str = ""
+    unit: str = ""
+    name: str
+
+
+class InstructionRequest(BaseModel):
+    instruction: str
+
+
+class RecipeRequest(BaseModel):
+    title: str
+    description: str = ""
+    servings: int = 4
+    prep_time_minutes: int | None = None
+    cook_time_minutes: int | None = None
+    source_url: str | None = None
+    ingredients: list[IngredientRequest] = []
+    instructions: list[InstructionRequest] = []
+
+
+async def get_user_household(user_id: int):
+    connection = await get_connection()
+    try:
+        household = await connection.fetchrow(
+            """
+            SELECT h.id, h.name, hm.role
+            FROM households h
+            JOIN household_members hm ON hm.household_id = h.id
+            WHERE hm.user_id = $1
+            ORDER BY h.id
+            LIMIT 1
+            """,
+            user_id,
+        )
+        return dict(household) if household else None
+    finally:
+        await connection.close()
+
+
+async def recipe_response(recipe: dict):
+    connection = await get_connection()
+    try:
+        ingredients = await connection.fetch(
+            """
+            SELECT id, quantity, unit, name, position
+            FROM recipe_ingredients
+            WHERE recipe_id = $1
+            ORDER BY position, id
+            """,
+            recipe["id"],
+        )
+
+        instructions = await connection.fetch(
+            """
+            SELECT id, step_number, instruction
+            FROM recipe_instructions
+            WHERE recipe_id = $1
+            ORDER BY step_number, id
+            """,
+            recipe["id"],
+        )
+
+        result = dict(recipe)
+        result["ingredients"] = [dict(item) for item in ingredients]
+        result["instructions"] = [dict(item) for item in instructions]
+        return result
+    finally:
+        await connection.close()
+
+
+@app.get("/api/recipes")
+async def list_recipes(
+    search: str = "",
+    wilfordspace_session: str | None = Cookie(default=None),
+):
+    user = await get_current_user(wilfordspace_session)
+    household = await get_user_household(user["id"])
+
+    if not household:
+        raise HTTPException(status_code=404, detail="Household not found")
+
+    connection = await get_connection()
+    try:
+        recipes = await connection.fetch(
+            """
+            SELECT id, title, description, servings,
+                   prep_time_minutes, cook_time_minutes,
+                   source_url, created_at, updated_at
+            FROM recipes
+            WHERE household_id = $1
+              AND ($2 = '' OR title ILIKE '%' || $2 || '%')
+            ORDER BY title
+            """,
+            household["id"],
+            search.strip(),
+        )
+
+        return {"recipes": [dict(recipe) for recipe in recipes]}
+    finally:
+        await connection.close()
+
+
+@app.get("/api/recipes/{recipe_id}")
+async def get_recipe(
+    recipe_id: int,
+    wilfordspace_session: str | None = Cookie(default=None),
+):
+    user = await get_current_user(wilfordspace_session)
+    household = await get_user_household(user["id"])
+
+    if not household:
+        raise HTTPException(status_code=404, detail="Household not found")
+
+    connection = await get_connection()
+    try:
+        recipe = await connection.fetchrow(
+            """
+            SELECT id, household_id, created_by, title, description,
+                   servings, prep_time_minutes, cook_time_minutes,
+                   source_url, created_at, updated_at
+            FROM recipes
+            WHERE id = $1 AND household_id = $2
+            """,
+            recipe_id,
+            household["id"],
+        )
+    finally:
+        await connection.close()
+
+    if not recipe:
+        raise HTTPException(status_code=404, detail="Recipe not found")
+
+    return await recipe_response(dict(recipe))
+
+
+@app.post("/api/recipes")
+async def create_recipe(
+    data: RecipeRequest,
+    wilfordspace_session: str | None = Cookie(default=None),
+):
+    user = await get_current_user(wilfordspace_session)
+    household = await get_user_household(user["id"])
+
+    if not household:
+        raise HTTPException(status_code=404, detail="Household not found")
+
+    title = data.title.strip()
+
+    if not title:
+        raise HTTPException(status_code=400, detail="Recipe title is required")
+
+    if data.servings < 1:
+        raise HTTPException(status_code=400, detail="Servings must be at least 1")
+
+    connection = await get_connection()
+
+    try:
+        async with connection.transaction():
+            recipe = await connection.fetchrow(
+                """
+                INSERT INTO recipes (
+                    household_id, created_by, title, description,
+                    servings, prep_time_minutes, cook_time_minutes, source_url
+                )
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                RETURNING id, household_id, created_by, title, description,
+                          servings, prep_time_minutes, cook_time_minutes,
+                          source_url, created_at, updated_at
+                """,
+                household["id"],
+                user["id"],
+                title,
+                data.description.strip(),
+                data.servings,
+                data.prep_time_minutes,
+                data.cook_time_minutes,
+                data.source_url,
+            )
+
+            for position, ingredient in enumerate(data.ingredients):
+                if ingredient.name.strip():
+                    await connection.execute(
+                        """
+                        INSERT INTO recipe_ingredients
+                            (recipe_id, quantity, unit, name, position)
+                        VALUES ($1, $2, $3, $4, $5)
+                        """,
+                        recipe["id"],
+                        ingredient.quantity.strip(),
+                        ingredient.unit.strip(),
+                        ingredient.name.strip(),
+                        position,
+                    )
+
+            for number, instruction in enumerate(data.instructions, start=1):
+                if instruction.instruction.strip():
+                    await connection.execute(
+                        """
+                        INSERT INTO recipe_instructions
+                            (recipe_id, step_number, instruction)
+                        VALUES ($1, $2, $3)
+                        """,
+                        recipe["id"],
+                        number,
+                        instruction.instruction.strip(),
+                    )
+
+        return await recipe_response(dict(recipe))
+    finally:
+        await connection.close()
+
+
+@app.delete("/api/recipes/{recipe_id}")
+async def delete_recipe(
+    recipe_id: int,
+    wilfordspace_session: str | None = Cookie(default=None),
+):
+    user = await get_current_user(wilfordspace_session)
+    household = await get_user_household(user["id"])
+
+    if not household:
+        raise HTTPException(status_code=404, detail="Household not found")
+
+    connection = await get_connection()
+    try:
+        result = await connection.execute(
+            """
+            DELETE FROM recipes
+            WHERE id = $1 AND household_id = $2
+            """,
+            recipe_id,
+            household["id"],
+        )
+
+        if result == "DELETE 0":
+            raise HTTPException(status_code=404, detail="Recipe not found")
+
+        return {"message": "Recipe deleted"}
+    finally:
+        await connection.close()
