@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WilfordSpace</title>
+  <style>
+    :root {
+      --background: #f7f8fa;
+      --surface: #ffffff;
+      --text: #172033;
+      --muted: #64748b;
+      --primary: #2a9d8f;
+      --accent: #e9b44c;
+      --border: #e2e8f0;
+    }
+
+    [data-theme="dark"] {
+      --background: #111827;
+      --surface: #1b263b;
+      --text: #f3f4f6;
+      --muted: #a8b3c5;
+      --primary: #43b8a8;
+      --accent: #f2c76e;
+      --border: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--background);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 6%;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 25px;
+      font-weight: bold;
+    }
+
+    .logo {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+      background: var(--primary);
+      color: white;
+      font-size: 22px;
+    }
+
+    button {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    main {
+      width: min(1180px, 88%);
+      margin: 0 auto;
+      padding: 60px 0;
+    }
+
+    .hero {
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(36px, 5vw, 60px);
+      letter-spacing: -2px;
+    }
+
+    .hero p {
+      max-width: 650px;
+      color: var(--muted);
+      font-size: 19px;
+      line-height: 1.6;
+    }
+
+    .accent {
+      color: var(--primary);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    .card {
+      min-height: 150px;
+      padding: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+
+    .card-icon {
+      font-size: 28px;
+    }
+
+    .card h2 {
+      margin: 14px 0 8px;
+      font-size: 19px;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 28px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--primary) 15%, var(--surface));
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    @media (max-width: 850px) {
+      .cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 520px) {
+      .cards {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">⌂</div>
+      <span>Wilford<span class="accent">Space</span></span>
+    </div>
+
+    <button id="theme-button">Toggle theme</button>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Your household, <span class="accent">organised.</span></h1>
+      <p>
+        Recipes, weekly dinners, shopping lists and household events
+        brought together in one private space.
+      </p>
+
+      <div class="status" id="status">
+        ● Connecting to WilfordSpace API...
+      </div>
+    </section>
+
+    <section class="cards">
+      <article class="card">
+        <div class="card-icon">🍲</div>
+        <h2>Recipes</h2>
+        <p>Keep your household recipes organised and easy to find.</p>
+      </article>
+
+      <article class="card">
+        <div class="card-icon">📅</div>
+        <h2>Dinner planner</h2>
+        <p>Plan your weekly dinners and prepare your shopping list.</p>
+      </article>
+
+      <article class="card">
+        <div class="card-icon">🛒</div>
+        <h2>Shopping list</h2>
+        <p>Track what you need and mark items as you shop.</p>
+      </article>
+
+      <article class="card">
+        <div class="card-icon">🗓️</div>
+        <h2>Calendar</h2>
+        <p>Share household plans with Apple Calendar and Google Calendar.</p>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const button = document.getElementById("theme-button");
+    const status = document.getElementById("status");
+
+    button.addEventListener("click", () => {
+      const current = document.documentElement.getAttribute("data-theme");
+      document.documentElement.setAttribute(
+        "data-theme",
+        current === "dark" ? "light" : "dark"
+      );
+    });
+
+    fetch("/api/health")
+      .then(response => response.json())
+      .then(data => {
+        status.textContent =
+          data.database === "connected"
+            ? "● WilfordSpace is online"
+            : "● WilfordSpace API is online";
+      })
+      .catch(() => {
+        status.textContent = "● Web application is online";
+      });
+  </script>
+</body>
+</html>
