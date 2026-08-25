@@ -574,3 +574,110 @@ async def delete_recipe(
         return {"message": "Recipe deleted"}
     finally:
         await connection.close()
+@app.put("/api/recipes/{recipe_id}")
+async def update_recipe(
+    recipe_id: int,
+    data: RecipeRequest,
+    wilfordspace_session: str | None = Cookie(default=None),
+):
+    user = await get_current_user(wilfordspace_session)
+    household = await get_user_household(user["id"])
+
+    if not household:
+        raise HTTPException(status_code=404, detail="Household not found")
+
+    title = data.title.strip()
+
+    if not title:
+        raise HTTPException(status_code=400, detail="Recipe title is required")
+
+    if data.servings < 1:
+        raise HTTPException(status_code=400, detail="Servings must be at least 1")
+
+    connection = await get_connection()
+
+    try:
+        async with connection.transaction():
+            existing = await connection.fetchrow(
+                """
+                SELECT id
+                FROM recipes
+                WHERE id = $1 AND household_id = $2
+                """,
+                recipe_id,
+                household["id"],
+            )
+
+            if not existing:
+                raise HTTPException(
+                    status_code=404,
+                    detail="Recipe not found",
+                )
+
+            recipe = await connection.fetchrow(
+                """
+                UPDATE recipes
+                SET title = $1,
+                    description = $2,
+                    servings = $3,
+                    prep_time_minutes = $4,
+                    cook_time_minutes = $5,
+                    source_url = $6,
+                    updated_at = NOW()
+                WHERE id = $7 AND household_id = $8
+                RETURNING id, household_id, created_by, title, description,
+                          servings, prep_time_minutes, cook_time_minutes,
+                          source_url, created_at, updated_at
+                """,
+                title,
+                data.description.strip(),
+                data.servings,
+                data.prep_time_minutes,
+                data.cook_time_minutes,
+                data.source_url,
+                recipe_id,
+                household["id"],
+            )
+
+            await connection.execute(
+                "DELETE FROM recipe_ingredients WHERE recipe_id = $1",
+                recipe_id,
+            )
+
+            await connection.execute(
+                "DELETE FROM recipe_instructions WHERE recipe_id = $1",
+                recipe_id,
+            )
+
+            for position, ingredient in enumerate(data.ingredients):
+                if ingredient.name.strip():
+                    await connection.execute(
+                        """
+                        INSERT INTO recipe_ingredients
+                            (recipe_id, quantity, unit, name, position)
+                        VALUES ($1, $2, $3, $4, $5)
+                        """,
+                        recipe_id,
+                        ingredient.quantity.strip(),
+                        ingredient.unit.strip(),
+                        ingredient.name.strip(),
+                        position,
+                    )
+
+            for number, instruction in enumerate(data.instructions, start=1):
+                if instruction.instruction.strip():
+                    await connection.execute(
+                        """
+                        INSERT INTO recipe_instructions
+                            (recipe_id, step_number, instruction)
+                        VALUES ($1, $2, $3)
+                        """,
+                        recipe_id,
+                        number,
+                        instruction.instruction.strip(),
+                    )
+
+        return await recipe_response(dict(recipe))
+
+    finally:
+        await connection.close()
