@@ -681,3 +681,315 @@ async def update_recipe(
 
     finally:
         await connection.close()
+import ipaddress
+import json
+import socket
+from urllib.parse import urljoin, urlparse
+
+import httpx
+from bs4 import BeautifulSoup
+
+
+class RecipeImportRequest(BaseModel):
+    url: str
+
+
+def validate_import_url(url: str) -> str:
+    parsed = urlparse(url.strip())
+
+    if parsed.scheme not in {"http", "https"}:
+        raise HTTPException(
+            status_code=400,
+            detail="Only HTTP and HTTPS URLs are supported",
+        )
+
+    if not parsed.hostname:
+        raise HTTPException(
+            status_code=400,
+            detail="A valid hostname is required",
+        )
+
+    if parsed.username or parsed.password:
+        raise HTTPException(
+            status_code=400,
+            detail=" URLs containing login details are not allowed",
+        )
+
+    hostname = parsed.hostname.rstrip(".").lower()
+
+    if hostname in {
+        "localhost",
+        "localhost.localdomain",
+        "ip6-localhost",
+        "ip6-loopback",
+    }:
+        raise HTTPException(
+            status_code=400,
+            detail="Local URLs are not allowed",
+        )
+
+    try:
+        addresses = socket.getaddrinfo(
+            hostname,
+            parsed.port or (443 if parsed.scheme == "https" else 80),
+            type=socket.SOCK_STREAM,
+        )
+    except socket.gaierror:
+        raise HTTPException(
+            status_code=400,
+            detail="The hostname could not be resolved",
+        )
+
+    for address in addresses:
+        ip_value = address[4][0]
+        ip = ipaddress.ip_address(ip_value)
+
+        if (
+            ip.is_private
+            or ip.is_loopback
+            or ip.is_link_local
+            or ip.is_reserved
+            or ip.is_multicast
+            or ip.is_unspecified
+        ):
+            raise HTTPException(
+                status_code=400,
+                detail="Private or local network URLs are not allowed",
+            )
+
+    return parsed.geturl()
+
+
+def find_recipe_jsonld(value):
+    if isinstance(value, dict):
+        value_type = value.get("@type", "")
+
+        if isinstance(value_type, list):
+            types = value_type
+        else:
+            types = [value_type]
+
+        if any(str(item).lower() == "recipe" for item in types):
+            return value
+
+        for key in ("@graph", "itemListElement"):
+            if key in value:
+                found = find_recipe_jsonld(value[key])
+                if found:
+                    return found
+
+    elif isinstance(value, list):
+        for item in value:
+            found = find_recipe_jsonld(item)
+            if found:
+                return found
+
+    return None
+
+
+def normalize_instructions(value):
+    if isinstance(value, str):
+        return [{"instruction": value.strip()}] if value.strip() else []
+
+    if not isinstance(value, list):
+        return []
+
+    result = []
+
+    for item in value:
+        if isinstance(item, str):
+            instruction = item.strip()
+        elif isinstance(item, dict):
+            instruction = str(
+                item.get("text")
+                or item.get("name")
+                or item.get("item")
+                or ""
+            ).strip()
+        else:
+            instruction = ""
+
+        if instruction:
+            result.append({"instruction": instruction})
+
+    return result
+
+
+def normalize_ingredients(value):
+    if not isinstance(value, list):
+        return []
+
+    result = []
+
+    for item in value:
+        if isinstance(item, str) and item.strip():
+            result.append(
+                {
+                    "quantity": "",
+                    "unit": "",
+                    "name": item.strip(),
+                }
+            )
+
+    return result
+
+
+def recipe_preview_from_html(html: str, source_url: str):
+    soup = BeautifulSoup(html, "html.parser")
+
+    for script in soup.find_all(
+        "script",
+        attrs={"type": "application/ld+json"},
+    ):
+        raw = script.string or script.get_text()
+
+        if not raw.strip():
+            continue
+
+        try:
+            data = json.loads(raw)
+        except json.JSONDecodeError:
+            continue
+
+        recipe = find_recipe_jsonld(data)
+
+        if not recipe:
+            continue
+
+        servings = recipe.get("recipeYield", 4)
+
+        if isinstance(servings, list):
+            servings = servings[0] if servings else 4
+
+        try:
+            servings = int(str(servings).split()[0])
+        except (TypeError, ValueError):
+            servings = 4
+
+        return {
+            "title": str(recipe.get("name") or "").strip(),
+            "description": str(recipe.get("description") or "").strip(),
+            "servings": max(servings, 1),
+            "prep_time_minutes": None,
+            "cook_time_minutes": None,
+            "source_url": source_url,
+            "ingredients": normalize_ingredients(
+                recipe.get("recipeIngredient", [])
+            ),
+            "instructions": normalize_instructions(
+                recipe.get("recipeInstructions", [])
+            ),
+        }
+
+    return None
+
+
+async def download_recipe_page(url: str) -> tuple[str, str]:
+    current_url = url
+
+    timeout = httpx.Timeout(
+        connect=5.0,
+        read=10.0,
+        write=5.0,
+        pool=5.0,
+    )
+
+    async with httpx.AsyncClient(
+        timeout=timeout,
+        follow_redirects=False,
+        headers={
+            "User-Agent": (
+                "WilfordSpace Recipe Importer/0.1 "
+                "(recipe preview only)"
+            )
+        },
+    ) as client:
+        for _ in range(4):
+            current_url = validate_import_url(current_url)
+
+            try:
+                response = await client.get(current_url)
+            except httpx.RequestError:
+                raise HTTPException(
+                    status_code=400,
+                    detail="The recipe page could not be downloaded",
+                )
+
+            if response.status_code in {301, 302, 303, 307, 308}:
+                location = response.headers.get("location")
+
+                if not location:
+                    raise HTTPException(
+                        status_code=400,
+                        detail="The recipe page returned an invalid redirect",
+                    )
+
+                current_url = urljoin(current_url, location)
+                continue
+
+            if response.status_code >= 400:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"The recipe page returned HTTP {response.status_code}",
+                )
+
+            content_type = response.headers.get("content-type", "").lower()
+
+            if "text/html" not in content_type:
+                raise HTTPException(
+                    status_code=400,
+                    detail="The URL did not return an HTML page",
+                )
+
+            content_length = response.headers.get("content-length")
+
+            if content_length:
+                try:
+                    if int(content_length) > 2_000_000:
+                        raise HTTPException(
+                            status_code=400,
+                            detail="The recipe page is too large",
+                        )
+                except ValueError:
+                    pass
+
+            content = response.content
+
+            if len(content) > 2_000_000:
+                raise HTTPException(
+                    status_code=400,
+                    detail="The recipe page is too large",
+                )
+
+            return content.decode(response.encoding or "utf-8", errors="replace"), current_url
+
+        raise HTTPException(
+            status_code=400,
+            detail="Too many redirects",
+        )
+
+
+@app.post("/api/recipes/import")
+async def import_recipe(
+    data: RecipeImportRequest,
+    wilfordspace_session: str | None = Cookie(default=None),
+):
+    await get_current_user(wilfordspace_session)
+
+    url = validate_import_url(data.url)
+    html, final_url = await download_recipe_page(url)
+    preview = recipe_preview_from_html(html, final_url)
+
+    if not preview or not preview["title"]:
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                "No structured recipe data was found on this page. "
+                "AI extraction will be added later."
+            ),
+        )
+
+    return {
+        "preview": preview,
+        "saved": False,
+    }
