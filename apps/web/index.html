@@ -7,26 +7,28 @@
 
   <style>
     :root {
-      --bg: #f7f8fa;
+      --background: #f7f8fa;
       --surface: #ffffff;
       --text: #172033;
       --muted: #64748b;
       --primary: #2a9d8f;
       --primary-dark: #238579;
-      --danger: #c0392b;
+      --accent: #e9b44c;
       --border: #dfe6ee;
+      --danger: #c0392b;
       --shadow: 0 12px 35px rgba(23, 32, 51, .08);
     }
 
     [data-theme="dark"] {
-      --bg: #111827;
+      --background: #111827;
       --surface: #1b263b;
       --text: #f3f4f6;
       --muted: #a8b3c5;
       --primary: #43b8a8;
       --primary-dark: #329d91;
-      --danger: #ff8d82;
+      --accent: #f2c76e;
       --border: #334155;
+      --danger: #ff8d82;
       --shadow: 0 12px 35px rgba(0, 0, 0, .25);
     }
 
@@ -37,7 +39,7 @@
     body {
       margin: 0;
       min-height: 100vh;
-      background: var(--bg);
+      background: var(--background);
       color: var(--text);
       font-family: Arial, Helvetica, sans-serif;
     }
@@ -66,7 +68,7 @@
       height: 40px;
       border-radius: 12px;
       background: var(--primary);
-      color: white;
+      color: #ffffff;
       font-size: 21px;
     }
 
@@ -76,7 +78,7 @@
 
     main {
       width: min(1180px, 90%);
-      margin: auto;
+      margin: 0 auto;
       padding: 45px 0;
     }
 
@@ -104,7 +106,7 @@
       border-radius: 8px;
       padding: 11px 16px;
       background: var(--primary);
-      color: white;
+      color: #ffffff;
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
@@ -122,6 +124,11 @@
 
     button.danger {
       background: var(--danger);
+    }
+
+    button:disabled {
+      opacity: .6;
+      cursor: not-allowed;
     }
 
     .actions,
@@ -173,7 +180,7 @@
       padding: 12px;
       border: 1px solid var(--border);
       border-radius: 8px;
-      background: var(--bg);
+      background: var(--background);
       color: var(--text);
       font: inherit;
     }
@@ -199,6 +206,10 @@
       margin-top: 14px;
       color: var(--danger);
       font-size: 14px;
+    }
+
+    .success-message {
+      color: var(--primary);
     }
 
     .status {
@@ -251,6 +262,7 @@
     .recipe-card h3 {
       color: var(--primary);
       cursor: pointer;
+      margin-bottom: 10px;
     }
 
     .recipe-card h3:hover {
@@ -260,6 +272,10 @@
     .recipe-meta {
       color: var(--muted);
       font-size: 14px;
+    }
+
+    .toolbar {
+      margin-bottom: 22px;
     }
 
     .toolbar input {
@@ -292,6 +308,18 @@
       line-height: 1.5;
     }
 
+    .help-text {
+      margin-top: 6px;
+      font-size: 13px;
+    }
+
+    .source-link {
+      display: inline-block;
+      margin-top: 15px;
+      color: var(--primary);
+      word-break: break-word;
+    }
+
     @media (max-width: 850px) {
       .auth-layout,
       .detail-grid {
@@ -315,6 +343,14 @@
       .form-grid {
         grid-template-columns: 1fr;
       }
+
+      header {
+        padding: 15px 5%;
+      }
+
+      .brand {
+        font-size: 20px;
+      }
     }
   </style>
 </head>
@@ -327,67 +363,144 @@
     </div>
 
     <div class="actions">
-      <button id="theme-button" class="secondary">Toggle theme</button>
-      <button id="logout-button" class="danger hidden">Log out</button>
+      <button id="theme-button" class="secondary">
+        Toggle theme
+      </button>
+
+      <button id="logout-button" class="danger hidden">
+        Log out
+      </button>
     </div>
   </header>
 
   <main>
+    <!-- Login and registration -->
     <section id="auth-view" class="auth-layout">
       <div>
         <h1>Your household, <span class="accent">organised.</span></h1>
+
         <p>
           Recipes, weekly dinners, shopping lists and household events
           brought together in one private space.
         </p>
-        <div class="status">● Private household workspace</div>
+
+        <div class="status">
+          ● Private household workspace
+        </div>
       </div>
 
       <div class="card">
         <div class="tabs">
-          <button id="login-tab">Log in</button>
-          <button id="register-tab" class="secondary">Create account</button>
+          <button id="login-tab">
+            Log in
+          </button>
+
+          <button id="register-tab" class="secondary">
+            Create account
+          </button>
         </div>
 
         <form id="login-form">
           <h2>Welcome back</h2>
 
-          <label for="login-email">Email address</label>
-          <input id="login-email" type="email" required>
+          <label for="login-email">
+            Email address
+          </label>
 
-          <label for="login-password">Password</label>
-          <input id="login-password" type="password" required>
+          <input
+            id="login-email"
+            type="email"
+            autocomplete="email"
+            required
+          >
 
-          <button type="submit">Log in</button>
+          <label for="login-password">
+            Password
+          </label>
+
+          <input
+            id="login-password"
+            type="password"
+            autocomplete="current-password"
+            required
+          >
+
+          <button type="submit">
+            Log in
+          </button>
+
           <div id="login-message" class="message"></div>
         </form>
 
         <form id="register-form" class="hidden">
           <h2>Create your account</h2>
 
-          <label for="register-name">Your name</label>
-          <input id="register-name" required>
+          <label for="register-name">
+            Your name
+          </label>
 
-          <label for="register-email">Email address</label>
-          <input id="register-email" type="email" required>
+          <input
+            id="register-name"
+            type="text"
+            autocomplete="name"
+            required
+          >
 
-          <label for="register-password">Password</label>
-          <input id="register-password" type="password" minlength="8" required>
+          <label for="register-email">
+            Email address
+          </label>
 
-          <label for="household-name">Household name</label>
-          <input id="household-name" value="Wilford Household" required>
+          <input
+            id="register-email"
+            type="email"
+            autocomplete="email"
+            required
+          >
 
-          <button type="submit">Create account</button>
+          <label for="register-password">
+            Password
+          </label>
+
+          <input
+            id="register-password"
+            type="password"
+            autocomplete="new-password"
+            minlength="8"
+            required
+          >
+
+          <label for="household-name">
+            Household name
+          </label>
+
+          <input
+            id="household-name"
+            type="text"
+            value="Wilford Household"
+            required
+          >
+
+          <button type="submit">
+            Create account
+          </button>
+
           <div id="register-message" class="message"></div>
         </form>
       </div>
     </section>
 
+    <!-- Dashboard -->
     <section id="dashboard-view" class="hidden">
       <div class="page-header">
         <div>
-          <h1>Welcome, <span id="user-name" class="accent"></span></h1>
-          <p>Your private WilfordSpace household dashboard.</p>
+          <h1>
+            Welcome,
+            <span id="user-name" class="accent"></span>
+          </h1>
+
+          <p>
+            Your private WilfordSpace household dashboard.
+          </p>
         </div>
       </div>
 
@@ -395,100 +508,324 @@
         <article id="recipes-card" class="feature-card">
           <div class="icon">🍲</div>
           <h3>Recipes</h3>
-          <p>Create, search, edit and manage household recipes.</p>
+          <p>
+            Create, search, edit and manage household recipes.
+          </p>
         </article>
 
         <article class="feature-card">
           <div class="icon">📅</div>
           <h3>Dinner planner</h3>
-          <p>Weekly meal planning will be added next.</p>
+          <p>
+            Weekly meal planning will be added next.
+          </p>
         </article>
 
         <article class="feature-card">
           <div class="icon">🛒</div>
           <h3>Shopping list</h3>
-          <p>Shopping lists will connect to recipes and meals.</p>
+          <p>
+            Shopping lists will connect to recipes and meals.
+          </p>
         </article>
       </div>
     </section>
 
+    <!-- Recipe list -->
     <section id="recipes-view" class="hidden">
       <div class="page-header">
         <div>
           <h1>Recipes</h1>
-          <p>Your shared household recipe collection.</p>
+          <p>
+            Your shared household recipe collection.
+          </p>
         </div>
 
         <div class="actions">
-          <button id="dashboard-button" class="secondary">Dashboard</button>
-          <button id="new-recipe-button">New recipe</button>
+          <button id="dashboard-button" class="secondary">
+            Dashboard
+          </button>
+
+          <button id="import-recipe-button" class="secondary">
+            Import recipe
+          </button>
+
+          <button id="new-recipe-button">
+            New recipe
+          </button>
         </div>
       </div>
 
       <div class="toolbar">
-        <input id="recipe-search" type="search" placeholder="Search recipes...">
-        <button id="search-button">Search</button>
+        <input
+          id="recipe-search"
+          type="search"
+          placeholder="Search recipes..."
+        >
+
+        <button id="search-button">
+          Search
+        </button>
       </div>
 
       <div id="recipe-list" class="recipe-grid"></div>
+
       <div id="recipe-list-message" class="message"></div>
     </section>
 
+    <!-- Create or edit recipe -->
     <section id="recipe-form-view" class="hidden">
       <div class="page-header">
         <div>
-          <h1 id="form-title">New recipe</h1>
-          <p id="form-subtitle">Add a recipe to your household collection.</p>
+          <h1 id="recipe-form-title">
+            New recipe
+          </h1>
+
+          <p id="recipe-form-subtitle">
+            Add a recipe to your household collection.
+          </p>
         </div>
 
-        <button id="cancel-button" class="secondary">Cancel</button>
+        <button id="cancel-recipe-button" class="secondary">
+          Cancel
+        </button>
       </div>
 
       <form id="recipe-form" class="card">
-        <label for="recipe-title">Recipe title</label>
-        <input id="recipe-title" required>
+        <label for="recipe-title">
+          Recipe title
+        </label>
 
-        <label for="recipe-description">Description</label>
+        <input
+          id="recipe-title"
+          type="text"
+          required
+        >
+
+        <label for="recipe-description">
+          Description
+        </label>
+
         <textarea id="recipe-description"></textarea>
 
         <div class="form-grid">
           <div>
-            <label for="recipe-servings">Servings</label>
-            <input id="recipe-servings" type="number" min="1" value="4" required>
+            <label for="recipe-servings">
+              Servings
+            </label>
+
+            <input
+              id="recipe-servings"
+              type="number"
+              min="1"
+              value="4"
+              required
+            >
           </div>
 
           <div>
-            <label for="recipe-prep">Prep time, minutes</label>
-            <input id="recipe-prep" type="number" min="0">
+            <label for="recipe-prep">
+              Prep time, minutes
+            </label>
+
+            <input
+              id="recipe-prep"
+              type="number"
+              min="0"
+            >
           </div>
 
           <div>
-            <label for="recipe-cook">Cook time, minutes</label>
-            <input id="recipe-cook" type="number" min="0">
+            <label for="recipe-cook">
+              Cook time, minutes
+            </label>
+
+            <input
+              id="recipe-cook"
+              type="number"
+              min="0"
+            >
           </div>
         </div>
 
-        <label for="recipe-source">Source URL, optional</label>
-        <input id="recipe-source" type="url">
+        <label for="recipe-source">
+          Source URL, optional
+        </label>
+
+        <input
+          id="recipe-source"
+          type="url"
+          placeholder="https://example.com/recipe"
+        >
 
         <label for="recipe-ingredients">
           Ingredients, one per line
         </label>
-        <textarea id="recipe-ingredients"
-          placeholder="400|g|pasta&#10;1|jar|tomato sauce"></textarea>
-        <p>Format: quantity|unit|name</p>
+
+        <textarea
+          id="recipe-ingredients"
+          placeholder="400|g|pasta&#10;1|jar|tomato sauce"
+        ></textarea>
+
+        <p class="help-text">
+          Format: quantity|unit|name
+        </p>
 
         <label for="recipe-instructions">
           Instructions, one step per line
         </label>
-        <textarea id="recipe-instructions"
-          placeholder="Boil the pasta.&#10;Heat the sauce."></textarea>
 
-        <button type="submit">Save recipe</button>
-        <div id="form-message" class="message"></div>
+        <textarea
+          id="recipe-instructions"
+          placeholder="Boil the pasta.&#10;Heat the sauce."
+        ></textarea>
+
+        <button type="submit">
+          Save recipe
+        </button>
+
+        <div id="recipe-form-message" class="message"></div>
       </form>
     </section>
 
+    <!-- Import recipe -->
+    <section id="import-view" class="hidden">
+      <div class="page-header">
+        <div>
+          <h1>Import recipe</h1>
+
+          <p>
+            Paste a public recipe URL to create an editable preview.
+          </p>
+        </div>
+
+        <button id="cancel-import-button" class="secondary">
+          Cancel
+        </button>
+      </div>
+
+      <form id="import-form" class="card">
+        <label for="import-url">
+          Recipe URL
+        </label>
+
+        <input
+          id="import-url"
+          type="url"
+          placeholder="https://www.bbcgoodfood.com/recipes/chicken-pasta-bake"
+          required
+        >
+
+        <button type="submit">
+          Import recipe
+        </button>
+
+        <div id="import-message" class="message"></div>
+      </form>
+
+      <form id="import-preview-form" class="card hidden">
+        <h2>
+          Review imported recipe
+        </h2>
+
+        <p>
+          Check and correct the information before saving.
+        </p>
+
+        <label for="import-title">
+          Recipe title
+        </label>
+
+        <input
+          id="import-title"
+          type="text"
+          required
+        >
+
+        <label for="import-description">
+          Description
+        </label>
+
+        <textarea id="import-description"></textarea>
+
+        <div class="form-grid">
+          <div>
+            <label for="import-servings">
+              Servings
+            </label>
+
+            <input
+              id="import-servings"
+              type="number"
+              min="1"
+              required
+            >
+          </div>
+
+          <div>
+            <label for="import-prep">
+              Prep time, minutes
+            </label>
+
+            <input
+              id="import-prep"
+              type="number"
+              min="0"
+            >
+          </div>
+
+          <div>
+            <label for="import-cook">
+              Cook time, minutes
+            </label>
+
+            <input
+              id="import-cook"
+              type="number"
+              min="0"
+            >
+          </div>
+        </div>
+
+        <label for="import-source">
+          Source URL
+        </label>
+
+        <input
+          id="import-source"
+          type="url"
+          readonly
+        >
+
+        <label for="import-ingredients">
+          Ingredients, one per line
+        </label>
+
+        <textarea
+          id="import-ingredients"
+          placeholder="quantity|unit|name"
+        ></textarea>
+
+        <p class="help-text">
+          Use quantity|unit|name where possible. Plain ingredient text is
+          also accepted.
+        </p>
+
+        <label for="import-instructions">
+          Instructions, one step per line
+        </label>
+
+        <textarea id="import-instructions"></textarea>
+
+        <button type="submit">
+          Save imported recipe
+        </button>
+
+        <div id="import-save-message" class="message"></div>
+      </form>
+    </section>
+
+    <!-- Recipe detail -->
     <section id="detail-view" class="hidden">
       <div class="page-header">
         <div>
@@ -497,9 +834,17 @@
         </div>
 
         <div class="actions">
-          <button id="back-button" class="secondary">Back to recipes</button>
-          <button id="edit-button">Edit</button>
-          <button id="delete-button" class="danger">Delete</button>
+          <button id="back-to-recipes-button" class="secondary">
+            Back to recipes
+          </button>
+
+          <button id="edit-recipe-button">
+            Edit
+          </button>
+
+          <button id="delete-recipe-button" class="danger">
+            Delete
+          </button>
         </div>
       </div>
 
@@ -515,6 +860,15 @@
         </div>
       </div>
 
+      <a
+        id="detail-source"
+        class="source-link hidden"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        View original recipe
+      </a>
+
       <div id="detail-message" class="message"></div>
     </section>
   </main>
@@ -525,6 +879,7 @@
       "dashboard-view",
       "recipes-view",
       "recipe-form-view",
+      "import-view",
       "detail-view"
     ];
 
@@ -568,6 +923,7 @@
     function showLoginForm() {
       document.getElementById("login-form").classList.remove("hidden");
       document.getElementById("register-form").classList.add("hidden");
+
       document.getElementById("login-tab").classList.remove("secondary");
       document.getElementById("register-tab").classList.add("secondary");
     }
@@ -575,14 +931,108 @@
     function showRegisterForm() {
       document.getElementById("login-form").classList.add("hidden");
       document.getElementById("register-form").classList.remove("hidden");
+
       document.getElementById("login-tab").classList.add("secondary");
       document.getElementById("register-tab").classList.remove("secondary");
     }
 
     function showDashboard(user) {
       currentUser = user;
+
       document.getElementById("user-name").textContent = user.name;
       showView("dashboard-view");
+    }
+
+    function openNewRecipeForm() {
+      editingRecipeId = null;
+
+      document.getElementById("recipe-form").reset();
+      document.getElementById("recipe-servings").value = 4;
+
+      document.getElementById("recipe-form-title").textContent =
+        "New recipe";
+
+      document.getElementById("recipe-form-subtitle").textContent =
+        "Add a recipe to your household collection.";
+
+      document.getElementById("recipe-form-message").textContent = "";
+
+      showView("recipe-form-view");
+    }
+
+    function openImportView() {
+      document.getElementById("import-form").reset();
+      document.getElementById("import-preview-form").reset();
+
+      document.getElementById("import-preview-form").classList.add(
+        "hidden"
+      );
+
+      document.getElementById("import-message").textContent = "";
+      document.getElementById("import-save-message").textContent = "";
+
+      showView("import-view");
+    }
+
+    function parseIngredients(value) {
+      return value
+        .split("\n")
+        .map(line => line.trim())
+        .filter(Boolean)
+        .map(line => {
+          const parts = line.split("|");
+
+          if (parts.length >= 3) {
+            return {
+              quantity: (parts[0] || "").trim(),
+              unit: (parts[1] || "").trim(),
+              name: parts.slice(2).join("|").trim()
+            };
+          }
+
+          return {
+            quantity: "",
+            unit: "",
+            name: line
+          };
+        })
+        .filter(item => item.name);
+    }
+
+    function parseInstructions(value) {
+      return value
+        .split("\n")
+        .map(line => line.trim())
+        .filter(Boolean)
+        .map(instruction => ({
+          instruction
+        }));
+    }
+
+    function ingredientsToText(ingredients) {
+      return (ingredients || [])
+        .map(item => {
+          const quantity = item.quantity || "";
+          const unit = item.unit || "";
+          const name = item.name || "";
+
+          if (quantity || unit) {
+            return [quantity, unit, name]
+              .filter(Boolean)
+              .join("|");
+          }
+
+          return name;
+        })
+        .filter(Boolean)
+        .join("\n");
+    }
+
+    function instructionsToText(instructions) {
+      return (instructions || [])
+        .map(item => item.instruction || "")
+        .filter(Boolean)
+        .join("\n");
     }
 
     async function loadRecipes() {
@@ -603,9 +1053,11 @@
         if (!data.recipes.length) {
           list.innerHTML = `
             <div class="empty-state">
-              No recipes found. Click “New recipe” to add one.
+              No recipes found. Click “New recipe” or “Import recipe”
+              to add one.
             </div>
           `;
+
           return;
         }
 
@@ -615,14 +1067,31 @@
 
           const title = document.createElement("h3");
           title.textContent = recipe.title;
-          title.addEventListener("click", () => showRecipe(recipe.id));
+          title.addEventListener("click", () => {
+            showRecipe(recipe.id);
+          });
 
           const description = document.createElement("p");
-          description.textContent = recipe.description || "No description";
+          description.textContent =
+            recipe.description || "No description";
 
           const meta = document.createElement("div");
           meta.className = "recipe-meta";
-          meta.textContent = `Serves ${recipe.servings}`;
+
+          const times = [];
+
+          if (recipe.prep_time_minutes !== null) {
+            times.push(`Prep ${recipe.prep_time_minutes} min`);
+          }
+
+          if (recipe.cook_time_minutes !== null) {
+            times.push(`Cook ${recipe.cook_time_minutes} min`);
+          }
+
+          meta.textContent = [
+            `Serves ${recipe.servings}`,
+            ...times
+          ].join(" · ");
 
           card.append(title, description, meta);
           list.appendChild(card);
@@ -642,34 +1111,66 @@
       showView("detail-view");
 
       const message = document.getElementById("detail-message");
+      const source = document.getElementById("detail-source");
+
       message.textContent = "Loading recipe...";
+      source.classList.add("hidden");
 
       try {
         const recipe = await request(`/api/recipes/${id}`);
 
-        document.getElementById("detail-title").textContent = recipe.title;
+        document.getElementById("detail-title").textContent =
+          recipe.title;
+
         document.getElementById("detail-description").textContent =
           recipe.description || "No description";
 
-        const ingredients = document.getElementById("detail-ingredients");
+        const ingredients =
+          document.getElementById("detail-ingredients");
+
         ingredients.innerHTML = "";
 
-        recipe.ingredients.forEach(item => {
-          const li = document.createElement("li");
-          li.textContent = [item.quantity, item.unit, item.name]
-            .filter(Boolean)
-            .join(" ");
-          ingredients.appendChild(li);
-        });
+        if (!recipe.ingredients.length) {
+          const item = document.createElement("li");
+          item.textContent = "No ingredients added.";
+          ingredients.appendChild(item);
+        } else {
+          recipe.ingredients.forEach(ingredient => {
+            const item = document.createElement("li");
 
-        const instructions = document.getElementById("detail-instructions");
+            item.textContent = [
+              ingredient.quantity,
+              ingredient.unit,
+              ingredient.name
+            ]
+              .filter(Boolean)
+              .join(" ");
+
+            ingredients.appendChild(item);
+          });
+        }
+
+        const instructions =
+          document.getElementById("detail-instructions");
+
         instructions.innerHTML = "";
 
-        recipe.instructions.forEach(item => {
-          const li = document.createElement("li");
-          li.textContent = item.instruction;
-          instructions.appendChild(li);
-        });
+        if (!recipe.instructions.length) {
+          const item = document.createElement("li");
+          item.textContent = "No instructions added.";
+          instructions.appendChild(item);
+        } else {
+          recipe.instructions.forEach(instruction => {
+            const item = document.createElement("li");
+            item.textContent = instruction.instruction;
+            instructions.appendChild(item);
+          });
+        }
+
+        if (recipe.source_url) {
+          source.href = recipe.source_url;
+          source.classList.remove("hidden");
+        }
 
         message.textContent = "";
       } catch (error) {
@@ -683,83 +1184,44 @@
 
         editingRecipeId = id;
 
-        document.getElementById("form-title").textContent = "Edit recipe";
-        document.getElementById("form-subtitle").textContent =
+        document.getElementById("recipe-form-title").textContent =
+          "Edit recipe";
+
+        document.getElementById("recipe-form-subtitle").textContent =
           "Update this household recipe.";
 
-        document.getElementById("recipe-title").value = recipe.title;
+        document.getElementById("recipe-title").value =
+          recipe.title || "";
+
         document.getElementById("recipe-description").value =
           recipe.description || "";
-        document.getElementById("recipe-servings").value = recipe.servings;
+
+        document.getElementById("recipe-servings").value =
+          recipe.servings || 4;
+
         document.getElementById("recipe-prep").value =
           recipe.prep_time_minutes ?? "";
+
         document.getElementById("recipe-cook").value =
           recipe.cook_time_minutes ?? "";
+
         document.getElementById("recipe-source").value =
           recipe.source_url || "";
 
         document.getElementById("recipe-ingredients").value =
-          recipe.ingredients
-            .map(item =>
-              [item.quantity, item.unit, item.name]
-                .filter(Boolean)
-                .join("|")
-            )
-            .join("\n");
+          ingredientsToText(recipe.ingredients);
 
         document.getElementById("recipe-instructions").value =
-          recipe.instructions
-            .map(item => item.instruction)
-            .join("\n");
+          instructionsToText(recipe.instructions);
 
-        document.getElementById("form-message").textContent = "";
+        document.getElementById("recipe-form-message").textContent =
+          "";
+
         showView("recipe-form-view");
       } catch (error) {
         document.getElementById("detail-message").textContent =
           error.message;
       }
-    }
-
-    function openNewRecipeForm() {
-      editingRecipeId = null;
-
-      document.getElementById("recipe-form").reset();
-      document.getElementById("recipe-servings").value = 4;
-      document.getElementById("form-title").textContent = "New recipe";
-      document.getElementById("form-subtitle").textContent =
-        "Add a recipe to your household collection.";
-      document.getElementById("form-message").textContent = "";
-
-      showView("recipe-form-view");
-    }
-
-    function parseIngredients() {
-      return document
-        .getElementById("recipe-ingredients")
-        .value
-        .split("\n")
-        .map(line => line.trim())
-        .filter(Boolean)
-        .map(line => {
-          const parts = line.split("|");
-
-          return {
-            quantity: (parts[0] || "").trim(),
-            unit: (parts[1] || "").trim(),
-            name: parts.slice(2).join("|").trim()
-          };
-        })
-        .filter(item => item.name);
-    }
-
-    function parseInstructions() {
-      return document
-        .getElementById("recipe-instructions")
-        .value
-        .split("\n")
-        .map(line => line.trim())
-        .filter(Boolean)
-        .map(instruction => ({ instruction }));
     }
 
     document.getElementById("login-tab").addEventListener(
@@ -840,7 +1302,17 @@
       openNewRecipeForm
     );
 
-    document.getElementById("cancel-button").addEventListener(
+    document.getElementById("import-recipe-button").addEventListener(
+      "click",
+      openImportView
+    );
+
+    document.getElementById("cancel-recipe-button").addEventListener(
+      "click",
+      showRecipes
+    );
+
+    document.getElementById("cancel-import-button").addEventListener(
       "click",
       showRecipes
     );
@@ -865,26 +1337,34 @@
       async event => {
         event.preventDefault();
 
-        const message = document.getElementById("form-message");
+        const message =
+          document.getElementById("recipe-form-message");
+
         message.textContent = "Saving recipe...";
 
         const recipeData = {
-          title: document.getElementById("recipe-title").value,
+          title: document.getElementById("recipe-title").value.trim(),
           description:
-            document.getElementById("recipe-description").value,
+            document.getElementById("recipe-description").value.trim(),
           servings: Number(
             document.getElementById("recipe-servings").value
           ),
-          prep_time_minutes: document.getElementById("recipe-prep").value
-            ? Number(document.getElementById("recipe-prep").value)
-            : null,
-          cook_time_minutes: document.getElementById("recipe-cook").value
-            ? Number(document.getElementById("recipe-cook").value)
-            : null,
+          prep_time_minutes:
+            document.getElementById("recipe-prep").value
+              ? Number(document.getElementById("recipe-prep").value)
+              : null,
+          cook_time_minutes:
+            document.getElementById("recipe-cook").value
+              ? Number(document.getElementById("recipe-cook").value)
+              : null,
           source_url:
-            document.getElementById("recipe-source").value || null,
-          ingredients: parseIngredients(),
-          instructions: parseInstructions()
+            document.getElementById("recipe-source").value.trim() || null,
+          ingredients: parseIngredients(
+            document.getElementById("recipe-ingredients").value
+          ),
+          instructions: parseInstructions(
+            document.getElementById("recipe-instructions").value
+          )
         };
 
         try {
@@ -904,12 +1384,120 @@
       }
     );
 
-    document.getElementById("back-button").addEventListener(
+    document.getElementById("import-form").addEventListener(
+      "submit",
+      async event => {
+        event.preventDefault();
+
+        const message = document.getElementById("import-message");
+        const previewForm =
+          document.getElementById("import-preview-form");
+
+        const url = document.getElementById("import-url").value.trim();
+
+        message.textContent =
+          "Downloading and extracting the recipe...";
+
+        previewForm.classList.add("hidden");
+
+        try {
+          const data = await request("/api/recipes/import", {
+            method: "POST",
+            body: JSON.stringify({ url })
+          });
+
+          const recipe = data.preview;
+
+          document.getElementById("import-title").value =
+            recipe.title || "";
+
+          document.getElementById("import-description").value =
+            recipe.description || "";
+
+          document.getElementById("import-servings").value =
+            recipe.servings || 4;
+
+          document.getElementById("import-prep").value =
+            recipe.prep_time_minutes ?? "";
+
+          document.getElementById("import-cook").value =
+            recipe.cook_time_minutes ?? "";
+
+          document.getElementById("import-source").value =
+            recipe.source_url || url;
+
+          document.getElementById("import-ingredients").value =
+            ingredientsToText(recipe.ingredients);
+
+          document.getElementById("import-instructions").value =
+            instructionsToText(recipe.instructions);
+
+          message.textContent =
+            "Preview ready. Check the details before saving.";
+
+          message.classList.add("success-message");
+          previewForm.classList.remove("hidden");
+        } catch (error) {
+          message.classList.remove("success-message");
+          message.textContent = error.message;
+        }
+      }
+    );
+
+    document.getElementById("import-preview-form").addEventListener(
+      "submit",
+      async event => {
+        event.preventDefault();
+
+        const message =
+          document.getElementById("import-save-message");
+
+        message.textContent = "Saving imported recipe...";
+
+        const recipeData = {
+          title: document.getElementById("import-title").value.trim(),
+          description:
+            document.getElementById("import-description").value.trim(),
+          servings: Number(
+            document.getElementById("import-servings").value
+          ),
+          prep_time_minutes:
+            document.getElementById("import-prep").value
+              ? Number(document.getElementById("import-prep").value)
+              : null,
+          cook_time_minutes:
+            document.getElementById("import-cook").value
+              ? Number(document.getElementById("import-cook").value)
+              : null,
+          source_url:
+            document.getElementById("import-source").value.trim() || null,
+          ingredients: parseIngredients(
+            document.getElementById("import-ingredients").value
+          ),
+          instructions: parseInstructions(
+            document.getElementById("import-instructions").value
+          )
+        };
+
+        try {
+          const recipe = await request("/api/recipes", {
+            method: "POST",
+            body: JSON.stringify(recipeData)
+          });
+
+          await showRecipe(recipe.id);
+        } catch (error) {
+          message.textContent = error.message;
+        }
+      }
+    );
+
+    document.getElementById("back-to-recipes-button").addEventListener(
       "click",
       showRecipes
     );
 
-    document.getElementById("edit-button").addEventListener(
+    document.getElementById("edit-recipe-button").addEventListener(
       "click",
       () => {
         if (selectedRecipeId) {
@@ -918,10 +1506,11 @@
       }
     );
 
-    document.getElementById("delete-button").addEventListener(
+    document.getElementById("delete-recipe-button").addEventListener(
       "click",
       async () => {
         if (!selectedRecipeId) return;
+
         if (!confirm("Delete this recipe?")) return;
 
         try {
@@ -929,6 +1518,7 @@
             method: "DELETE"
           });
 
+          selectedRecipeId = null;
           await showRecipes();
         } catch (error) {
           document.getElementById("detail-message").textContent =
@@ -940,12 +1530,17 @@
     document.getElementById("logout-button").addEventListener(
       "click",
       async () => {
-        await request("/api/auth/logout", { method: "POST" });
-        currentUser = null;
-        selectedRecipeId = null;
-        editingRecipeId = null;
-        showView("auth-view");
-        showLoginForm();
+        try {
+          await request("/api/auth/logout", {
+            method: "POST"
+          });
+        } finally {
+          currentUser = null;
+          selectedRecipeId = null;
+          editingRecipeId = null;
+          showView("auth-view");
+          showLoginForm();
+        }
       }
     );
 
@@ -965,7 +1560,10 @@
     const savedTheme = localStorage.getItem("wilfordspace-theme");
 
     if (savedTheme) {
-      document.documentElement.setAttribute("data-theme", savedTheme);
+      document.documentElement.setAttribute(
+        "data-theme",
+        savedTheme
+      );
     }
 
     async function checkSession() {
