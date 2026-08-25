@@ -7,29 +7,27 @@
 
   <style>
     :root {
-      --background: #f7f8fa;
+      --bg: #f7f8fa;
       --surface: #ffffff;
       --text: #172033;
       --muted: #64748b;
       --primary: #2a9d8f;
       --primary-dark: #238579;
-      --accent: #e9b44c;
-      --border: #dfe6ee;
       --danger: #c0392b;
-      --shadow: 0 12px 35px rgba(23, 32, 51, 0.08);
+      --border: #dfe6ee;
+      --shadow: 0 12px 35px rgba(23, 32, 51, .08);
     }
 
     [data-theme="dark"] {
-      --background: #111827;
+      --bg: #111827;
       --surface: #1b263b;
       --text: #f3f4f6;
       --muted: #a8b3c5;
       --primary: #43b8a8;
       --primary-dark: #329d91;
-      --accent: #f2c76e;
-      --border: #334155;
       --danger: #ff8d82;
-      --shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+      --border: #334155;
+      --shadow: 0 12px 35px rgba(0, 0, 0, .25);
     }
 
     * {
@@ -39,15 +37,15 @@
     body {
       margin: 0;
       min-height: 100vh;
-      background: var(--background);
+      background: var(--bg);
       color: var(--text);
       font-family: Arial, Helvetica, sans-serif;
     }
 
     header {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
       padding: 18px 6%;
       background: var(--surface);
       border-bottom: 1px solid var(--border);
@@ -78,7 +76,7 @@
 
     main {
       width: min(1180px, 90%);
-      margin: 0 auto;
+      margin: auto;
       padding: 45px 0;
     }
 
@@ -89,6 +87,10 @@
     }
 
     h2 {
+      margin-top: 0;
+    }
+
+    h3 {
       margin-top: 0;
     }
 
@@ -122,31 +124,40 @@
       background: var(--danger);
     }
 
-    button.small {
-      padding: 8px 11px;
-      font-size: 13px;
+    .actions,
+    .tabs,
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
-    input,
-    textarea {
-      width: 100%;
+    .card,
+    .feature-card,
+    .recipe-card {
+      background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 12px;
-      background: var(--background);
-      color: var(--text);
-      font: inherit;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
     }
 
-    textarea {
-      min-height: 100px;
-      resize: vertical;
+    .card {
+      padding: 28px;
     }
 
-    input:focus,
-    textarea:focus {
-      outline: 2px solid var(--primary);
-      border-color: var(--primary);
+    .auth-layout {
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 55px;
+      align-items: center;
+    }
+
+    .tabs {
+      margin-bottom: 22px;
+    }
+
+    .tabs button {
+      flex: 1;
     }
 
     label {
@@ -156,35 +167,26 @@
       font-weight: 600;
     }
 
-    .card {
-      padding: 28px;
-      background: var(--surface);
+    input,
+    textarea {
+      width: 100%;
+      padding: 12px;
       border: 1px solid var(--border);
-      border-radius: 16px;
-      box-shadow: var(--shadow);
+      border-radius: 8px;
+      background: var(--bg);
+      color: var(--text);
+      font: inherit;
     }
 
-    .auth-layout {
-      display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
-      gap: 55px;
-      align-items: center;
+    textarea {
+      min-height: 110px;
+      resize: vertical;
     }
 
-    .tabs,
-    .actions,
-    .toolbar {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .tabs {
-      margin-bottom: 22px;
-    }
-
-    .tabs button {
-      flex: 1;
+    input:focus,
+    textarea:focus {
+      outline: 2px solid var(--primary);
+      border-color: var(--primary);
     }
 
     form button[type="submit"] {
@@ -204,7 +206,7 @@
       margin-top: 15px;
       padding: 9px 13px;
       border-radius: 999px;
-      background: rgba(42, 157, 143, 0.14);
+      background: rgba(42, 157, 143, .14);
       color: var(--primary);
       font-weight: 600;
     }
@@ -215,8 +217,8 @@
 
     .page-header {
       display: flex;
-      justify-content: space-between;
       align-items: flex-start;
+      justify-content: space-between;
       gap: 20px;
       margin-bottom: 28px;
     }
@@ -231,9 +233,6 @@
     .feature-card,
     .recipe-card {
       padding: 23px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
     }
 
     .feature-card {
@@ -250,7 +249,6 @@
     }
 
     .recipe-card h3 {
-      margin: 0 0 10px;
       color: var(--primary);
       cursor: pointer;
     }
@@ -264,10 +262,6 @@
       font-size: 14px;
     }
 
-    .toolbar {
-      margin-bottom: 22px;
-    }
-
     .toolbar input {
       max-width: 420px;
     }
@@ -279,13 +273,12 @@
     }
 
     .empty-state {
+      grid-column: 1 / -1;
       padding: 35px;
       text-align: center;
       color: var(--muted);
-      background: var(--surface);
       border: 1px dashed var(--border);
       border-radius: 14px;
-      grid-column: 1 / -1;
     }
 
     .detail-grid {
@@ -402,7 +395,7 @@
         <article id="recipes-card" class="feature-card">
           <div class="icon">🍲</div>
           <h3>Recipes</h3>
-          <p>Create, search and manage household recipes.</p>
+          <p>Create, search, edit and manage household recipes.</p>
         </article>
 
         <article class="feature-card">
@@ -441,11 +434,11 @@
       <div id="recipe-list-message" class="message"></div>
     </section>
 
-    <section id="create-view" class="hidden">
+    <section id="recipe-form-view" class="hidden">
       <div class="page-header">
         <div>
-          <h1>New recipe</h1>
-          <p>Add a recipe to your household collection.</p>
+          <h1 id="form-title">New recipe</h1>
+          <p id="form-subtitle">Add a recipe to your household collection.</p>
         </div>
 
         <button id="cancel-button" class="secondary">Cancel</button>
@@ -483,13 +476,13 @@
         </label>
         <textarea id="recipe-ingredients"
           placeholder="400|g|pasta&#10;1|jar|tomato sauce"></textarea>
-        <p>Use this format: quantity|unit|name</p>
+        <p>Format: quantity|unit|name</p>
 
         <label for="recipe-instructions">
           Instructions, one step per line
         </label>
         <textarea id="recipe-instructions"
-          placeholder="Boil the pasta.&#10;Heat the sauce and combine."></textarea>
+          placeholder="Boil the pasta.&#10;Heat the sauce."></textarea>
 
         <button type="submit">Save recipe</button>
         <div id="form-message" class="message"></div>
@@ -505,6 +498,7 @@
 
         <div class="actions">
           <button id="back-button" class="secondary">Back to recipes</button>
+          <button id="edit-button">Edit</button>
           <button id="delete-button" class="danger">Delete</button>
         </div>
       </div>
@@ -526,19 +520,20 @@
   </main>
 
   <script>
-    const views = [
+    const viewIds = [
       "auth-view",
       "dashboard-view",
       "recipes-view",
-      "create-view",
+      "recipe-form-view",
       "detail-view"
     ];
 
     let currentUser = null;
     let selectedRecipeId = null;
+    let editingRecipeId = null;
 
     function showView(viewId) {
-      views.forEach(id => {
+      viewIds.forEach(id => {
         document.getElementById(id).classList.toggle(
           "hidden",
           id !== viewId
@@ -590,11 +585,6 @@
       showView("dashboard-view");
     }
 
-    async function showRecipes() {
-      showView("recipes-view");
-      await loadRecipes();
-    }
-
     async function loadRecipes() {
       const list = document.getElementById("recipe-list");
       const message = document.getElementById("recipe-list-message");
@@ -628,8 +618,7 @@
           title.addEventListener("click", () => showRecipe(recipe.id));
 
           const description = document.createElement("p");
-          description.textContent =
-            recipe.description || "No description";
+          description.textContent = recipe.description || "No description";
 
           const meta = document.createElement("div");
           meta.className = "recipe-meta";
@@ -643,6 +632,11 @@
       }
     }
 
+    async function showRecipes() {
+      showView("recipes-view");
+      await loadRecipes();
+    }
+
     async function showRecipe(id) {
       selectedRecipeId = id;
       showView("detail-view");
@@ -653,9 +647,7 @@
       try {
         const recipe = await request(`/api/recipes/${id}`);
 
-        document.getElementById("detail-title").textContent =
-          recipe.title;
-
+        document.getElementById("detail-title").textContent = recipe.title;
         document.getElementById("detail-description").textContent =
           recipe.description || "No description";
 
@@ -683,6 +675,91 @@
       } catch (error) {
         message.textContent = error.message;
       }
+    }
+
+    async function openEditForm(id) {
+      try {
+        const recipe = await request(`/api/recipes/${id}`);
+
+        editingRecipeId = id;
+
+        document.getElementById("form-title").textContent = "Edit recipe";
+        document.getElementById("form-subtitle").textContent =
+          "Update this household recipe.";
+
+        document.getElementById("recipe-title").value = recipe.title;
+        document.getElementById("recipe-description").value =
+          recipe.description || "";
+        document.getElementById("recipe-servings").value = recipe.servings;
+        document.getElementById("recipe-prep").value =
+          recipe.prep_time_minutes ?? "";
+        document.getElementById("recipe-cook").value =
+          recipe.cook_time_minutes ?? "";
+        document.getElementById("recipe-source").value =
+          recipe.source_url || "";
+
+        document.getElementById("recipe-ingredients").value =
+          recipe.ingredients
+            .map(item =>
+              [item.quantity, item.unit, item.name]
+                .filter(Boolean)
+                .join("|")
+            )
+            .join("\n");
+
+        document.getElementById("recipe-instructions").value =
+          recipe.instructions
+            .map(item => item.instruction)
+            .join("\n");
+
+        document.getElementById("form-message").textContent = "";
+        showView("recipe-form-view");
+      } catch (error) {
+        document.getElementById("detail-message").textContent =
+          error.message;
+      }
+    }
+
+    function openNewRecipeForm() {
+      editingRecipeId = null;
+
+      document.getElementById("recipe-form").reset();
+      document.getElementById("recipe-servings").value = 4;
+      document.getElementById("form-title").textContent = "New recipe";
+      document.getElementById("form-subtitle").textContent =
+        "Add a recipe to your household collection.";
+      document.getElementById("form-message").textContent = "";
+
+      showView("recipe-form-view");
+    }
+
+    function parseIngredients() {
+      return document
+        .getElementById("recipe-ingredients")
+        .value
+        .split("\n")
+        .map(line => line.trim())
+        .filter(Boolean)
+        .map(line => {
+          const parts = line.split("|");
+
+          return {
+            quantity: (parts[0] || "").trim(),
+            unit: (parts[1] || "").trim(),
+            name: parts.slice(2).join("|").trim()
+          };
+        })
+        .filter(item => item.name);
+    }
+
+    function parseInstructions() {
+      return document
+        .getElementById("recipe-instructions")
+        .value
+        .split("\n")
+        .map(line => line.trim())
+        .filter(Boolean)
+        .map(instruction => ({ instruction }));
     }
 
     document.getElementById("login-tab").addEventListener(
@@ -760,12 +837,7 @@
 
     document.getElementById("new-recipe-button").addEventListener(
       "click",
-      () => {
-        document.getElementById("recipe-form").reset();
-        document.getElementById("recipe-servings").value = 4;
-        document.getElementById("form-message").textContent = "";
-        showView("create-view");
-      }
+      openNewRecipeForm
     );
 
     document.getElementById("cancel-button").addEventListener(
@@ -781,7 +853,10 @@
     document.getElementById("recipe-search").addEventListener(
       "keydown",
       event => {
-        if (event.key === "Enter") loadRecipes();
+        if (event.key === "Enter") {
+          event.preventDefault();
+          loadRecipes();
+        }
       }
     );
 
@@ -793,51 +868,33 @@
         const message = document.getElementById("form-message");
         message.textContent = "Saving recipe...";
 
-        const ingredients = document
-          .getElementById("recipe-ingredients")
-          .value
-          .split("\n")
-          .map(line => line.trim())
-          .filter(Boolean)
-          .map(line => {
-            const parts = line.split("|");
-            return {
-              quantity: (parts[0] || "").trim(),
-              unit: (parts[1] || "").trim(),
-              name: parts.slice(2).join("|").trim()
-            };
-          })
-          .filter(item => item.name);
-
-        const instructions = document
-          .getElementById("recipe-instructions")
-          .value
-          .split("\n")
-          .map(line => line.trim())
-          .filter(Boolean)
-          .map(instruction => ({ instruction }));
+        const recipeData = {
+          title: document.getElementById("recipe-title").value,
+          description:
+            document.getElementById("recipe-description").value,
+          servings: Number(
+            document.getElementById("recipe-servings").value
+          ),
+          prep_time_minutes: document.getElementById("recipe-prep").value
+            ? Number(document.getElementById("recipe-prep").value)
+            : null,
+          cook_time_minutes: document.getElementById("recipe-cook").value
+            ? Number(document.getElementById("recipe-cook").value)
+            : null,
+          source_url:
+            document.getElementById("recipe-source").value || null,
+          ingredients: parseIngredients(),
+          instructions: parseInstructions()
+        };
 
         try {
-          const recipe = await request("/api/recipes", {
-            method: "POST",
-            body: JSON.stringify({
-              title: document.getElementById("recipe-title").value,
-              description:
-                document.getElementById("recipe-description").value,
-              servings: Number(
-                document.getElementById("recipe-servings").value
-              ),
-              prep_time_minutes: document.getElementById("recipe-prep").value
-                ? Number(document.getElementById("recipe-prep").value)
-                : null,
-              cook_time_minutes: document.getElementById("recipe-cook").value
-                ? Number(document.getElementById("recipe-cook").value)
-                : null,
-              source_url:
-                document.getElementById("recipe-source").value || null,
-              ingredients,
-              instructions
-            })
+          const url = editingRecipeId
+            ? `/api/recipes/${editingRecipeId}`
+            : "/api/recipes";
+
+          const recipe = await request(url, {
+            method: editingRecipeId ? "PUT" : "POST",
+            body: JSON.stringify(recipeData)
           });
 
           await showRecipe(recipe.id);
@@ -852,6 +909,15 @@
       showRecipes
     );
 
+    document.getElementById("edit-button").addEventListener(
+      "click",
+      () => {
+        if (selectedRecipeId) {
+          openEditForm(selectedRecipeId);
+        }
+      }
+    );
+
     document.getElementById("delete-button").addEventListener(
       "click",
       async () => {
@@ -862,6 +928,7 @@
           await request(`/api/recipes/${selectedRecipeId}`, {
             method: "DELETE"
           });
+
           await showRecipes();
         } catch (error) {
           document.getElementById("detail-message").textContent =
@@ -875,6 +942,8 @@
       async () => {
         await request("/api/auth/logout", { method: "POST" });
         currentUser = null;
+        selectedRecipeId = null;
+        editingRecipeId = null;
         showView("auth-view");
         showLoginForm();
       }
