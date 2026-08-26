@@ -15,6 +15,7 @@ from jose import JWTError, jwt
 from pydantic import BaseModel, EmailStr
 from pwdlib import PasswordHash
 from meal_planner import router as meal_plan_router
+from shopping_list import router as shopping_list_router
 
 
 DATABASE_URL = os.environ["DATABASE_URL"]
@@ -40,6 +41,8 @@ app.add_middleware(
 )
 
 app.include_router(meal_plan_router)
+
+app.include_router(shopping_list_router)
 
 class RegisterRequest(BaseModel):
     name: str
