@@ -8,7 +8,7 @@
   <style>
     :root {
       --bg: #171717;
-      --panel: #222222;
+      --panel: #222;
       --panel-2: #292929;
       --panel-3: #303030;
       --border: #3b3b3b;
@@ -17,22 +17,20 @@
       --accent: #ef8b2c;
       --accent-hover: #ff9f43;
       --danger: #e85d75;
-      --success: #69bd8a;
       --shadow: 0 12px 32px rgba(0, 0, 0, .25);
     }
 
     [data-theme="light"] {
       --bg: #f3f3f3;
-      --panel: #ffffff;
+      --panel: #fff;
       --panel-2: #fafafa;
-      --panel-3: #eeeeee;
-      --border: #dddddd;
+      --panel-3: #eee;
+      --border: #ddd;
       --text: #202020;
       --muted: #707070;
       --accent: #d66f13;
       --accent-hover: #bd5d09;
       --danger: #c9405d;
-      --success: #318a58;
       --shadow: 0 12px 32px rgba(0, 0, 0, .1);
     }
 
@@ -40,16 +38,12 @@
       box-sizing: border-box;
     }
 
-    html,
     body {
-      min-height: 100%;
+      min-height: 100vh;
       margin: 0;
-    }
-
-    body {
       color: var(--text);
       background: var(--bg);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont,
         "Segoe UI", sans-serif;
     }
 
@@ -61,21 +55,16 @@
     }
 
     button {
-      color: white;
+      color: #fff;
       background: var(--accent);
       border: 0;
       border-radius: 7px;
       padding: 10px 15px;
       cursor: pointer;
-      transition: background .15s ease, transform .15s ease;
     }
 
     button:hover {
       background: var(--accent-hover);
-    }
-
-    button:active {
-      transform: translateY(1px);
     }
 
     button.secondary {
@@ -84,22 +73,8 @@
       border: 1px solid var(--border);
     }
 
-    button.secondary:hover {
-      background: var(--border);
-    }
-
     button.danger {
       background: var(--danger);
-    }
-
-    button.small {
-      padding: 6px 10px;
-      font-size: 13px;
-    }
-
-    button:disabled {
-      opacity: .5;
-      cursor: not-allowed;
     }
 
     input,
@@ -114,15 +89,8 @@
       outline: none;
     }
 
-    input:focus,
-    textarea:focus,
-    select:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 2px rgba(239, 139, 44, .16);
-    }
-
     textarea {
-      min-height: 110px;
+      min-height: 100px;
       resize: vertical;
     }
 
@@ -142,20 +110,11 @@
     }
 
     h1 {
-      margin-bottom: 6px;
       font-size: 28px;
     }
 
     h2 {
       font-size: 21px;
-    }
-
-    h3 {
-      font-size: 17px;
-    }
-
-    a {
-      color: var(--accent);
     }
 
     .hidden {
@@ -169,12 +128,9 @@
 
     .sidebar {
       position: fixed;
-      z-index: 10;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      display: flex;
+      inset: 0 auto 0 0;
       width: 245px;
+      display: flex;
       flex-direction: column;
       padding: 22px 15px;
       background: #1e1e1e;
@@ -187,9 +143,8 @@
       gap: 11px;
       margin: 2px 9px 31px;
       color: #fff;
-      font-weight: 800;
       font-size: 21px;
-      letter-spacing: -.4px;
+      font-weight: 800;
     }
 
     .brand-mark {
@@ -200,8 +155,6 @@
       color: #1e1e1e;
       background: var(--accent);
       border-radius: 10px;
-      font-size: 19px;
-      font-weight: 900;
     }
 
     .nav-title {
@@ -237,7 +190,6 @@
       width: 22px;
       color: var(--accent);
       text-align: center;
-      font-size: 17px;
     }
 
     .sidebar-bottom {
@@ -252,12 +204,10 @@
       border: 1px solid #383838;
       border-radius: 8px;
       font-size: 12px;
-      overflow-wrap: anywhere;
     }
 
     .main {
       width: calc(100% - 245px);
-      min-width: 0;
       margin-left: 245px;
       padding: 30px 38px 60px;
     }
@@ -300,6 +250,16 @@
       gap: 18px;
     }
 
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .toolbar input {
+      max-width: 410px;
+    }
+
     .recipe-card {
       overflow: hidden;
       padding: 0;
@@ -307,12 +267,6 @@
       border: 1px solid var(--border);
       border-radius: 10px;
       cursor: pointer;
-      transition: transform .15s ease, border-color .15s ease;
-    }
-
-    .recipe-card:hover {
-      border-color: var(--accent);
-      transform: translateY(-2px);
     }
 
     .recipe-card-image {
@@ -331,13 +285,9 @@
     }
 
     .recipe-card p {
-      display: -webkit-box;
-      overflow: hidden;
       color: var(--muted);
       font-size: 13px;
       line-height: 1.45;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 3;
     }
 
     .meta {
@@ -354,15 +304,11 @@
       border-radius: 12px;
     }
 
-    .toolbar {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .toolbar input {
-      max-width: 410px;
+    .message {
+      min-height: 22px;
+      margin-top: 12px;
+      color: var(--accent);
+      font-size: 14px;
     }
 
     .empty {
@@ -372,161 +318,6 @@
       border: 1px dashed var(--border);
       border-radius: 10px;
       text-align: center;
-    }
-
-    .message {
-      min-height: 22px;
-      margin-top: 12px;
-      color: var(--accent);
-      font-size: 14px;
-    }
-
-    .modal-backdrop {
-      position: fixed;
-      z-index: 30;
-      inset: 0;
-      display: grid;
-      overflow: auto;
-      padding: 25px;
-      background: rgba(0, 0, 0, .72);
-      place-items: center;
-    }
-
-    .modal {
-      width: min(700px, 100%);
-      max-height: calc(100vh - 50px);
-      overflow: auto;
-      padding: 23px;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 11px;
-      box-shadow: var(--shadow);
-    }
-
-    .modal-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 15px;
-    }
-
-    .modal-head h2 {
-      margin: 0;
-    }
-
-    .close {
-      width: 34px;
-      height: 34px;
-      padding: 0;
-      color: var(--muted);
-      background: transparent;
-      font-size: 24px;
-    }
-
-    .close:hover {
-      color: white;
-      background: var(--panel-3);
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0 14px;
-    }
-
-    .full {
-      grid-column: 1 / -1;
-    }
-
-    .form-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 20px;
-    }
-
-    .recipe-detail {
-      width: min(1080px, 100%);
-      margin: 0 auto;
-    }
-
-    .recipe-hero {
-      display: grid;
-      grid-template-columns: 1fr 390px;
-      gap: 30px;
-      margin-bottom: 25px;
-      padding: 25px;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 11px;
-    }
-
-    .recipe-hero-image {
-      width: 100%;
-      height: 275px;
-      object-fit: cover;
-      background: var(--panel-3);
-      border-radius: 8px;
-    }
-
-    .recipe-description {
-      color: var(--muted);
-      line-height: 1.6;
-    }
-
-    .recipe-stats {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 9px;
-      margin: 20px 0;
-    }
-
-    .recipe-stat {
-      padding: 9px 12px;
-      color: var(--muted);
-      background: var(--panel-2);
-      border-radius: 7px;
-      font-size: 13px;
-    }
-
-    .recipe-stat strong {
-      display: block;
-      color: var(--text);
-      margin-bottom: 2px;
-    }
-
-    .recipe-columns {
-      display: grid;
-      grid-template-columns: 350px 1fr;
-      gap: 22px;
-    }
-
-    .ingredient,
-    .instruction {
-      display: flex;
-      gap: 11px;
-      padding: 11px 0;
-      border-bottom: 1px solid var(--border);
-      line-height: 1.45;
-    }
-
-    .ingredient input {
-      width: 17px;
-      height: 17px;
-      margin-top: 3px;
-      accent-color: var(--accent);
-    }
-
-    .instruction-number {
-      display: grid;
-      flex: 0 0 29px;
-      width: 29px;
-      height: 29px;
-      place-items: center;
-      color: #1e1e1e;
-      background: var(--accent);
-      border-radius: 50%;
-      font-weight: 800;
     }
 
     .planner-controls {
@@ -603,8 +394,6 @@
       font-size: 11px;
     }
 
-    /* Shopping list */
-
     .shopping-page {
       width: min(650px, 100%);
       margin: 0 auto;
@@ -616,7 +405,6 @@
       min-height: 90px;
       align-items: center;
       justify-content: center;
-      margin-bottom: 25px;
       border-bottom: 1px solid var(--border);
     }
 
@@ -660,9 +448,9 @@
     .shopping-add-bar {
       display: flex;
       align-items: center;
+      gap: 12px;
       width: 100%;
       min-height: 42px;
-      gap: 12px;
       margin-bottom: 12px;
       padding: 0 18px;
       color: #bdbdbd;
@@ -672,14 +460,8 @@
       cursor: pointer;
     }
 
-    .shopping-add-bar:hover {
-      color: white;
-      background: var(--panel-3);
-    }
-
     .shopping-add-icon {
       color: var(--accent);
-      font-size: 17px;
     }
 
     .shopping-form-card {
@@ -688,11 +470,6 @@
       background: var(--panel-2);
       border: 1px solid var(--border);
       border-radius: 10px;
-    }
-
-    .shopping-form-card h2 {
-      margin-bottom: 15px;
-      font-size: 18px;
     }
 
     .shopping-category {
@@ -708,7 +485,7 @@
       width: 100%;
       min-height: 42px;
       padding: 0 15px;
-      color: #fff;
+      color: white;
       background: #999;
       border: 0;
       border-radius: 0;
@@ -722,7 +499,6 @@
     }
 
     .shopping-category-arrow {
-      font-size: 17px;
       transition: transform .2s ease;
     }
 
@@ -741,23 +517,16 @@
     .shopping-item {
       display: flex;
       align-items: center;
-      min-height: 52px;
       gap: 12px;
+      min-height: 52px;
       padding: 0 13px;
       border-bottom: 1px solid #2c2c2c;
     }
 
-    .shopping-item:last-child {
-      border-bottom: 0;
-    }
-
     .shopping-item input[type="checkbox"] {
-      flex: 0 0 auto;
       width: 17px;
       height: 17px;
-      margin: 0;
       accent-color: var(--accent);
-      cursor: pointer;
     }
 
     .shopping-item-text {
@@ -775,7 +544,6 @@
 
     .shopping-item-actions {
       display: flex;
-      align-items: center;
       gap: 3px;
     }
 
@@ -785,17 +553,7 @@
       padding: 0;
       color: #bdbdbd;
       background: transparent;
-      border: 0;
       font-size: 16px;
-    }
-
-    .shopping-item-actions button:hover {
-      color: white;
-      background: #333;
-    }
-
-    .shopping-item-actions .delete-shopping-item:hover {
-      color: #ff6685;
     }
 
     .shopping-empty {
@@ -815,14 +573,65 @@
       font-size: 13px;
     }
 
+    .modal-backdrop {
+      position: fixed;
+      z-index: 30;
+      inset: 0;
+      display: grid;
+      padding: 25px;
+      background: rgba(0, 0, 0, .72);
+      place-items: center;
+    }
+
+    .modal {
+      width: min(700px, 100%);
+      max-height: calc(100vh - 50px);
+      overflow: auto;
+      padding: 23px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 11px;
+    }
+
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-head h2 {
+      margin: 0;
+    }
+
+    .close {
+      padding: 2px 8px;
+      color: var(--muted);
+      background: transparent;
+      font-size: 23px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 14px;
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
     .auth-screen {
       display: grid;
       min-height: 100vh;
       padding: 20px;
       place-items: center;
-      background:
-        radial-gradient(circle at top right, rgba(239, 139, 44, .15), transparent 35%),
-        var(--bg);
+      background: var(--bg);
     }
 
     .auth-card {
@@ -831,7 +640,6 @@
       background: var(--panel);
       border: 1px solid var(--border);
       border-radius: 12px;
-      box-shadow: var(--shadow);
     }
 
     .auth-brand {
@@ -863,34 +671,11 @@
       font-size: 13px;
     }
 
-    @media (max-width: 950px) {
-      .sidebar {
-        width: 205px;
-      }
-
-      .main {
-        width: calc(100% - 205px);
-        margin-left: 205px;
-        padding: 25px;
-      }
-
-      .recipe-hero {
-        grid-template-columns: 1fr 300px;
-      }
-
-      .recipe-columns {
-        grid-template-columns: 1fr;
-      }
-    }
-
     @media (max-width: 700px) {
       .sidebar {
         position: static;
         width: 100%;
-        height: auto;
         min-height: auto;
-        border-right: 0;
-        border-bottom: 1px solid #353535;
       }
 
       .app {
@@ -903,10 +688,6 @@
         padding: 22px 15px 45px;
       }
 
-      .sidebar-bottom {
-        margin-top: 12px;
-      }
-
       .user-box {
         display: none;
       }
@@ -914,24 +695,18 @@
       .nav-button {
         display: inline-flex;
         width: auto;
-        margin-right: 4px;
-      }
-
-      .nav-title {
-        margin-top: 15px;
-      }
-
-      .recipe-hero {
-        grid-template-columns: 1fr;
-      }
-
-      .recipe-hero-image {
-        order: -1;
-        height: 220px;
       }
 
       .page-head {
         flex-direction: column;
+      }
+
+      .shopping-page .page-head {
+        flex-direction: row;
+      }
+
+      .recipe-hero {
+        grid-template-columns: 1fr;
       }
 
       .form-grid {
@@ -940,23 +715,6 @@
 
       .full {
         grid-column: auto;
-      }
-
-      .shopping-page .page-head {
-        flex-direction: row;
-      }
-
-      .shopping-page .page-head .actions {
-        right: 0;
-      }
-
-      .shopping-page .page-head h1 {
-        font-size: 21px;
-      }
-
-      .shopping-footer {
-        gap: 12px;
-        flex-direction: column;
       }
     }
   </style>
@@ -977,10 +735,10 @@
         <h2>Welcome back</h2>
 
         <label for="login-email">Email address</label>
-        <input id="login-email" type="email" required autocomplete="email">
+        <input id="login-email" type="email" required>
 
         <label for="login-password">Password</label>
-        <input id="login-password" type="password" required autocomplete="current-password">
+        <input id="login-password" type="password" required>
 
         <div class="form-actions">
           <button type="submit">Log in</button>
@@ -998,13 +756,13 @@
         <h2>Create account</h2>
 
         <label for="register-name">Name</label>
-        <input id="register-name" required autocomplete="name">
+        <input id="register-name" required>
 
         <label for="register-email">Email address</label>
-        <input id="register-email" type="email" required autocomplete="email">
+        <input id="register-email" type="email" required>
 
         <label for="register-password">Password</label>
-        <input id="register-password" type="password" required minlength="8" autocomplete="new-password">
+        <input id="register-password" type="password" minlength="8" required>
 
         <div class="form-actions">
           <button type="submit">Register</button>
@@ -1082,19 +840,19 @@
           <div class="card">
             <h3>Recipes</h3>
             <p id="dashboard-recipe-count">Loading...</p>
-            <button class="small" data-view="recipes-view">View recipes</button>
+            <button data-view="recipes-view">View recipes</button>
           </div>
 
           <div class="card">
             <h3>This week's planner</h3>
             <p>Plan your household dinners.</p>
-            <button class="small" data-view="planner-view">Open planner</button>
+            <button data-view="planner-view">Open planner</button>
           </div>
 
           <div class="card">
             <h3>Shopping list</h3>
             <p>Keep the household shop organised.</p>
-            <button class="small" data-view="shopping-view">Open shopping list</button>
+            <button data-view="shopping-view">Open shopping list</button>
           </div>
         </div>
       </section>
@@ -1118,10 +876,6 @@
 
         <div id="recipe-list" class="grid"></div>
         <div id="recipe-message" class="message"></div>
-      </section>
-
-      <section id="recipe-detail-view" class="page hidden">
-        <div id="recipe-detail"></div>
       </section>
 
       <section id="planner-view" class="page hidden">
@@ -1185,7 +939,6 @@
               <option value="Bakery">Bakery</option>
               <option value="Frozen">Frozen</option>
               <option value="Cupboard">Cupboard</option>
-              <option value="Sauces, Spreads & dip">Sauces, Spreads & dip</option>
               <option value="Drinks">Drinks</option>
               <option value="Other" selected>Other</option>
             </select>
@@ -1221,132 +974,12 @@
         <div class="card">
           <h2>Household calendar</h2>
           <p>
-            Your WilfordSpace calendar will support shared events and Apple
-            Calendar and Google Calendar compatibility.
+            Shared events and Apple Calendar and Google Calendar compatibility
+            will be added here.
           </p>
         </div>
       </section>
     </main>
-  </div>
-
-  <div id="recipe-modal" class="modal-backdrop hidden">
-    <div class="modal">
-      <div class="modal-head">
-        <h2 id="recipe-modal-title">New recipe</h2>
-        <button class="close" data-close="recipe-modal">×</button>
-      </div>
-
-      <form id="recipe-form">
-        <input id="recipe-id" type="hidden">
-
-        <div class="form-grid">
-          <div class="full">
-            <label for="recipe-title">Title</label>
-            <input id="recipe-title" required>
-          </div>
-
-          <div class="full">
-            <label for="recipe-description">Description</label>
-            <textarea id="recipe-description"></textarea>
-          </div>
-
-          <div>
-            <label for="recipe-servings">Servings</label>
-            <input id="recipe-servings" type="number" min="1">
-          </div>
-
-          <div>
-            <label for="recipe-image">Image URL</label>
-            <input id="recipe-image" type="url">
-          </div>
-
-          <div>
-            <label for="recipe-prep">Prep time, minutes</label>
-            <input id="recipe-prep" type="number" min="0">
-          </div>
-
-          <div>
-            <label for="recipe-cook">Cook time, minutes</label>
-            <input id="recipe-cook" type="number" min="0">
-          </div>
-
-          <div class="full">
-            <label for="recipe-source">Source URL</label>
-            <input id="recipe-source" type="url">
-          </div>
-
-          <div class="full">
-            <label for="recipe-ingredients">Ingredients, one per line</label>
-            <textarea id="recipe-ingredients" placeholder="400 g chicken breast&#10;1 onion&#10;2 cloves garlic"></textarea>
-          </div>
-
-          <div class="full">
-            <label for="recipe-instructions">Instructions, one step per line</label>
-            <textarea id="recipe-instructions" placeholder="Preheat the oven.&#10;Chop the ingredients.&#10;Cook until done."></textarea>
-          </div>
-        </div>
-
-        <div class="form-actions">
-          <button type="submit">Save recipe</button>
-          <button type="button" class="secondary" data-close="recipe-modal">Cancel</button>
-        </div>
-
-        <div id="recipe-form-message" class="message"></div>
-      </form>
-    </div>
-  </div>
-
-  <div id="import-modal" class="modal-backdrop hidden">
-    <div class="modal">
-      <div class="modal-head">
-        <h2>Import recipe</h2>
-        <button class="close" data-close="import-modal">×</button>
-      </div>
-
-      <form id="import-form">
-        <label for="import-url">Recipe URL</label>
-        <input id="import-url" type="url" required placeholder="https://www.bbcgoodfood.com/...">
-
-        <div class="form-actions">
-          <button type="submit">Import preview</button>
-          <button type="button" class="secondary" data-close="import-modal">Cancel</button>
-        </div>
-
-        <div id="import-message" class="message"></div>
-      </form>
-
-      <div id="import-preview" class="hidden">
-        <h3>Review imported recipe</h3>
-
-        <label for="preview-title">Title</label>
-        <input id="preview-title">
-
-        <label for="preview-description">Description</label>
-        <textarea id="preview-description"></textarea>
-
-        <label for="preview-image">Image URL</label>
-        <input id="preview-image" type="url">
-
-        <label for="preview-servings">Servings</label>
-        <input id="preview-servings" type="number" min="1">
-
-        <label for="preview-prep">Prep time, minutes</label>
-        <input id="preview-prep" type="number" min="0">
-
-        <label for="preview-cook">Cook time, minutes</label>
-        <input id="preview-cook" type="number" min="0">
-
-        <label for="preview-ingredients">Ingredients</label>
-        <textarea id="preview-ingredients"></textarea>
-
-        <label for="preview-instructions">Instructions</label>
-        <textarea id="preview-instructions"></textarea>
-
-        <div class="form-actions">
-          <button id="save-imported-recipe">Save recipe</button>
-        </div>
-      </div>
-    </div>
   </div>
 
   <div id="meal-modal" class="modal-backdrop hidden">
@@ -1364,10 +997,10 @@
 
         <label for="meal-type">Meal type</label>
         <select id="meal-type">
-          <option value="Dinner" selected>Dinner</option>
-          <option value="Breakfast">Breakfast</option>
-          <option value="Lunch">Lunch</option>
-          <option value="Other">Other</option>
+          <option value="dinner" selected>Dinner</option>
+          <option value="breakfast">Breakfast</option>
+          <option value="lunch">Lunch</option>
+          <option value="other">Other</option>
         </select>
 
         <label for="meal-recipe">Recipe</label>
@@ -1386,7 +1019,9 @@
 
         <div class="form-actions">
           <button type="submit">Save meal</button>
-          <button type="button" class="secondary" data-close="meal-modal">Cancel</button>
+          <button type="button" class="secondary" data-close="meal-modal">
+            Cancel
+          </button>
         </div>
 
         <div id="meal-message" class="message"></div>
@@ -1399,7 +1034,6 @@
 
     let currentUser = null;
     let recipes = [];
-    let currentRecipe = null;
     let plannerOffset = 0;
 
     async function api(path, options = {}) {
@@ -1424,6 +1058,9 @@
         const detail =
           data?.detail ||
           data?.message ||
+          (Array.isArray(data)
+            ? data.map(item => item.msg || JSON.stringify(item)).join(", ")
+            : null) ||
           `Request failed with status ${response.status}`;
 
         throw new Error(detail);
@@ -1432,16 +1069,21 @@
       return data;
     }
 
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
     function showView(id) {
       document.querySelectorAll("main .page").forEach(page => {
         page.classList.add("hidden");
       });
 
-      const selected = $(id);
-
-      if (selected) {
-        selected.classList.remove("hidden");
-      }
+      $(id).classList.remove("hidden");
 
       document.querySelectorAll(".nav-button[data-view]").forEach(button => {
         button.classList.toggle("active", button.dataset.view === id);
@@ -1472,25 +1114,6 @@
       $(id).classList.add("hidden");
     }
 
-    function formatMinutes(value) {
-      const minutes = Number(value || 0);
-
-      if (!minutes) {
-        return "";
-      }
-
-      if (minutes < 60) {
-        return `${minutes} min`;
-      }
-
-      const hours = Math.floor(minutes / 60);
-      const remaining = minutes % 60;
-
-      return remaining
-        ? `${hours} hr ${remaining} min`
-        : `${hours} hr`;
-    }
-
     function dateKey(date) {
       return date.toISOString().slice(0, 10);
     }
@@ -1513,12 +1136,8 @@
       });
     }
 
-    function recipeIngredients(recipe) {
-      return recipe.ingredients || recipe.recipe_ingredients || [];
-    }
-
-    function recipeInstructions(recipe) {
-      return recipe.instructions || recipe.recipe_instructions || [];
+    function recipeName(recipe) {
+      return recipe.title || recipe.name || "Untitled recipe";
     }
 
     function ingredientText(item) {
@@ -1533,66 +1152,40 @@
       ].filter(Boolean).join(" ");
     }
 
-    function instructionText(item) {
-      if (typeof item === "string") {
-        return item;
-      }
-
-      return item.instruction || item.text || item.description || "";
-    }
-
-    function recipeName(recipe) {
-      return recipe.title || recipe.name || "Untitled recipe";
-    }
-
-    function mealName(meal) {
-      return recipeName(meal.recipe || {}) ||
-        meal.custom_name ||
-        meal.name ||
-        "Meal";
-    }
-
     async function checkSession() {
       try {
         const data = await api("/api/auth/me");
         currentUser = data.user || data;
-        showApplication();
+        $("auth-screen").classList.add("hidden");
+        $("app").classList.remove("hidden");
+
+        $("user-box").textContent =
+          currentUser.name ||
+          currentUser.full_name ||
+          currentUser.email ||
+          "";
+
+        showView("dashboard-view");
       } catch {
-        showLogin();
+        $("auth-screen").classList.remove("hidden");
+        $("app").classList.add("hidden");
       }
-    }
-
-    function showLogin() {
-      $("auth-screen").classList.remove("hidden");
-      $("app").classList.add("hidden");
-    }
-
-    function showApplication() {
-      $("auth-screen").classList.add("hidden");
-      $("app").classList.remove("hidden");
-
-      const email = currentUser?.email || "";
-      const name = currentUser?.name || currentUser?.full_name || email;
-
-      $("user-box").textContent = name;
-      showView("dashboard-view");
     }
 
     async function loadDashboard() {
       try {
         const data = await api("/api/recipes");
         const list = data.recipes || data || [];
+
         $("dashboard-recipe-count").textContent =
           `${list.length} recipe${list.length === 1 ? "" : "s"} saved`;
       } catch {
-        $("dashboard-recipe-count").textContent = "Unable to load recipes";
+        $("dashboard-recipe-count").textContent =
+          "Unable to load recipes";
       }
     }
 
     async function loadRecipes() {
-      $("recipe-list").innerHTML = "";
-      $("recipe-message").textContent = "Loading recipes...";
-
       try {
         const data = await api("/api/recipes");
         recipes = data.recipes || data || [];
@@ -1606,336 +1199,60 @@
       const search = $("recipe-search").value.trim().toLowerCase();
 
       const visible = recipes.filter(recipe => {
-        const text = [
+        return [
           recipeName(recipe),
           recipe.description,
           recipe.source_url
-        ].join(" ").toLowerCase();
-
-        return text.includes(search);
+        ].join(" ").toLowerCase().includes(search);
       });
-
-      $("recipe-message").textContent = "";
 
       if (!visible.length) {
         $("recipe-list").innerHTML = `
-          <div class="empty">
-            No recipes found.
-          </div>
+          <div class="empty">No recipes found.</div>
         `;
         return;
       }
 
-      $("recipe-list").innerHTML = visible.map(recipe => {
-        const image = recipe.image_url
-          ? `<img class="recipe-card-image" src="${escapeHtml(recipe.image_url)}" alt="">`
-          : `<div class="recipe-card-image"></div>`;
+      $("recipe-list").innerHTML = visible.map(recipe => `
+        <article class="recipe-card">
+          ${
+            recipe.image_url
+              ? `<img class="recipe-card-image" src="${escapeHtml(recipe.image_url)}" alt="">`
+              : `<div class="recipe-card-image"></div>`
+          }
 
-        const total =
-          Number(recipe.prep_time_minutes || 0) +
-          Number(recipe.cook_time_minutes || 0);
+          <div class="recipe-card-content">
+            <h3>${escapeHtml(recipeName(recipe))}</h3>
+            <p>${escapeHtml(recipe.description || "")}</p>
 
-        return `
-          <article class="recipe-card" data-recipe-id="${recipe.id}">
-            ${image}
-            <div class="recipe-card-content">
-              <h3>${escapeHtml(recipeName(recipe))}</h3>
-              <p>${escapeHtml(recipe.description || "No description available.")}</p>
-              <div class="meta">
-                ${total ? `<span class="pill">${formatMinutes(total)}</span>` : ""}
-                ${recipe.servings ? `<span class="pill">${recipe.servings} servings</span>` : ""}
-              </div>
-            </div>
-          </article>
-        `;
-      }).join("");
-
-      document.querySelectorAll(".recipe-card").forEach(card => {
-        card.onclick = () => openRecipe(card.dataset.recipeId);
-      });
-    }
-
-    async function openRecipe(id) {
-      try {
-        currentRecipe = await api(`/api/recipes/${id}`);
-        showView("recipe-detail-view");
-        renderRecipeDetail();
-      } catch (error) {
-        alert(error.message);
-      }
-    }
-
-    function renderRecipeDetail() {
-      const recipe = currentRecipe;
-      const ingredients = recipeIngredients(recipe);
-      const instructions = recipeInstructions(recipe);
-
-      const image = recipe.image_url
-        ? `<img class="recipe-hero-image" src="${escapeHtml(recipe.image_url)}" alt="">`
-        : `<div class="recipe-hero-image"></div>`;
-
-      $("recipe-detail").innerHTML = `
-        <div class="recipe-detail">
-          <div class="page-head">
-            <button class="secondary" id="back-recipes">← Recipes</button>
-            <div class="actions">
-              <button id="edit-current-recipe">Edit</button>
-              <button id="delete-current-recipe" class="danger">Delete</button>
-            </div>
-          </div>
-
-          <div class="recipe-hero">
-            <div>
-              <h1>${escapeHtml(recipeName(recipe))}</h1>
-              <p class="recipe-description">
-                ${escapeHtml(recipe.description || "No description available.")}
-              </p>
-
-              <div class="recipe-stats">
-                ${recipe.servings ? `
-                  <div class="recipe-stat">
-                    <strong>${recipe.servings}</strong>
-                    Servings
-                  </div>
-                ` : ""}
-
-                ${recipe.prep_time_minutes ? `
-                  <div class="recipe-stat">
-                    <strong>${formatMinutes(recipe.prep_time_minutes)}</strong>
-                    Prep time
-                  </div>
-                ` : ""}
-
-                ${recipe.cook_time_minutes ? `
-                  <div class="recipe-stat">
-                    <strong>${formatMinutes(recipe.cook_time_minutes)}</strong>
-                    Cook time
-                  </div>
-                ` : ""}
-              </div>
-
-              ${recipe.source_url ? `
-                <a href="${escapeHtml(recipe.source_url)}" target="_blank" rel="noopener">
-                  View original source
-                </a>
-              ` : ""}
-            </div>
-
-            ${image}
-          </div>
-
-          <div class="recipe-columns">
-            <div class="card">
-              <h2>Ingredients</h2>
-              ${ingredients.length
-                ? ingredients.map(item => `
-                  <label class="ingredient">
-                    <input type="checkbox">
-                    <span>${escapeHtml(ingredientText(item))}</span>
-                  </label>
-                `).join("")
-                : `<p class="muted">No ingredients recorded.</p>`
-              }
-            </div>
-
-            <div class="card">
-              <h2>Instructions</h2>
-              ${instructions.length
-                ? instructions.map((item, index) => `
-                  <div class="instruction">
-                    <span class="instruction-number">${index + 1}</span>
-                    <span>${escapeHtml(instructionText(item))}</span>
-                  </div>
-                `).join("")
-                : `<p class="muted">No instructions recorded.</p>`
+            <div class="meta">
+              ${
+                recipe.servings
+                  ? `<span class="pill">${recipe.servings} servings</span>`
+                  : ""
               }
             </div>
           </div>
-        </div>
-      `;
-
-      $("back-recipes").onclick = () => showView("recipes-view");
-      $("edit-current-recipe").onclick = () => openRecipeEditor(recipe);
-      $("delete-current-recipe").onclick = () => deleteRecipe(recipe.id);
-    }
-
-    function openRecipeEditor(recipe = null) {
-      $("recipe-modal-title").textContent =
-        recipe ? "Edit recipe" : "New recipe";
-
-      $("recipe-id").value = recipe?.id || "";
-      $("recipe-title").value = recipe ? recipeName(recipe) : "";
-      $("recipe-description").value = recipe?.description || "";
-      $("recipe-servings").value = recipe?.servings || "";
-      $("recipe-image").value = recipe?.image_url || "";
-      $("recipe-prep").value = recipe?.prep_time_minutes || "";
-      $("recipe-cook").value = recipe?.cook_time_minutes || "";
-      $("recipe-source").value = recipe?.source_url || "";
-
-      $("recipe-ingredients").value =
-        recipe
-          ? recipeIngredients(recipe).map(ingredientText).join("\n")
-          : "";
-
-      $("recipe-instructions").value =
-        recipe
-          ? recipeInstructions(recipe).map(instructionText).join("\n")
-          : "";
-
-      $("recipe-form-message").textContent = "";
-      openModal("recipe-modal");
-    }
-
-    async function saveRecipe(event) {
-      event.preventDefault();
-
-      const id = $("recipe-id").value;
-
-      const payload = {
-        title: $("recipe-title").value.trim(),
-        description: $("recipe-description").value.trim(),
-        servings: Number($("recipe-servings").value) || null,
-        image_url: $("recipe-image").value.trim() || null,
-        prep_time_minutes: Number($("recipe-prep").value) || null,
-        cook_time_minutes: Number($("recipe-cook").value) || null,
-        source_url: $("recipe-source").value.trim() || null,
-        ingredients: $("recipe-ingredients").value
-          .split("\n")
-          .map(value => value.trim())
-          .filter(Boolean)
-          .map(name => ({ name })),
-        instructions: $("recipe-instructions").value
-          .split("\n")
-          .map(value => value.trim())
-          .filter(Boolean)
-          .map(instruction => ({ instruction }))
-      };
-
-      try {
-        const path = id ? `/api/recipes/${id}` : "/api/recipes";
-
-        await api(path, {
-          method: id ? "PUT" : "POST",
-          body: JSON.stringify(payload)
-        });
-
-        closeModal("recipe-modal");
-
-        if (id) {
-          await openRecipe(id);
-        } else {
-          showView("recipes-view");
-        }
-      } catch (error) {
-        $("recipe-form-message").textContent = error.message;
-      }
-    }
-
-    async function deleteRecipe(id) {
-      if (!confirm("Delete this recipe?")) {
-        return;
-      }
-
-      try {
-        await api(`/api/recipes/${id}`, {
-          method: "DELETE"
-        });
-
-        showView("recipes-view");
-      } catch (error) {
-        alert(error.message);
-      }
-    }
-
-    async function importRecipe(event) {
-      event.preventDefault();
-
-      $("import-message").textContent = "Importing recipe...";
-      $("import-preview").classList.add("hidden");
-
-      try {
-        const data = await api("/api/recipes/import", {
-          method: "POST",
-          body: JSON.stringify({
-            url: $("import-url").value.trim()
-          })
-        });
-
-        const recipe = data.recipe || data.preview || data;
-
-        $("preview-title").value = recipe.title || recipe.name || "";
-        $("preview-description").value = recipe.description || "";
-        $("preview-image").value = recipe.image_url || "";
-        $("preview-servings").value = recipe.servings || "";
-        $("preview-prep").value = recipe.prep_time_minutes || "";
-        $("preview-cook").value = recipe.cook_time_minutes || "";
-
-        $("preview-ingredients").value =
-          (recipe.ingredients || []).map(ingredientText).join("\n");
-
-        $("preview-instructions").value =
-          (recipe.instructions || []).map(instructionText).join("\n");
-
-        $("import-preview").classList.remove("hidden");
-        $("import-message").textContent = "Review the recipe before saving.";
-      } catch (error) {
-        $("import-message").textContent = error.message;
-      }
-    }
-
-    async function saveImportedRecipe() {
-      const payload = {
-        title: $("preview-title").value.trim(),
-        description: $("preview-description").value.trim(),
-        image_url: $("preview-image").value.trim() || null,
-        servings: Number($("preview-servings").value) || null,
-        prep_time_minutes: Number($("preview-prep").value) || null,
-        cook_time_minutes: Number($("preview-cook").value) || null,
-        source_url: $("import-url").value.trim(),
-        ingredients: $("preview-ingredients").value
-          .split("\n")
-          .map(value => value.trim())
-          .filter(Boolean)
-          .map(name => ({ name })),
-        instructions: $("preview-instructions").value
-          .split("\n")
-          .map(value => value.trim())
-          .filter(Boolean)
-          .map(instruction => ({ instruction }))
-      };
-
-      try {
-        await api("/api/recipes", {
-          method: "POST",
-          body: JSON.stringify(payload)
-        });
-
-        closeModal("import-modal");
-        showView("recipes-view");
-      } catch (error) {
-        $("import-message").textContent = error.message;
-      }
+        </article>
+      `).join("");
     }
 
     async function loadPlanner() {
       const monday = mondayOfWeek(plannerOffset);
-      const start = dateKey(monday);
-      const endDate = new Date(monday);
-      endDate.setDate(endDate.getDate() + 6);
-      const end = dateKey(endDate);
+      const end = new Date(monday);
+      end.setDate(end.getDate() + 6);
 
       $("planner-week").textContent =
-        `${formatDate(monday)} – ${formatDate(endDate)}`;
+        `${formatDate(monday)} – ${formatDate(end)}`;
 
       $("planner-grid").innerHTML = "Loading...";
 
       try {
         const data = await api(
-          `/api/meal-plan?start_date=${start}&end_date=${end}`
+          `/api/meal-plan?start_date=${dateKey(monday)}&end_date=${dateKey(end)}`
         );
 
-        const meals = data.meals || data || [];
-        renderPlanner(monday, meals);
+        renderPlanner(monday, data.meals || data || []);
       } catch (error) {
         $("planner-message").textContent = error.message;
       }
@@ -1949,6 +1266,7 @@
         day.setDate(day.getDate() + index);
 
         const key = dateKey(day);
+
         const dayMeals = meals.filter(meal => {
           return String(meal.date || meal.meal_date).slice(0, 10) === key;
         });
@@ -1962,14 +1280,24 @@
 
             ${dayMeals.map(meal => `
               <div class="meal">
-                <div class="meal-type">${escapeHtml(meal.meal_type || "Dinner")}</div>
-                <strong>${escapeHtml(
-                  meal.recipe ? recipeName(meal.recipe) : meal.custom_name || meal.name || "Meal"
-                )}</strong>
-                ${meal.notes ? `<div>${escapeHtml(meal.notes)}</div>` : ""}
+                <div class="meal-type">
+                  ${escapeHtml(meal.meal_type || "dinner")}
+                </div>
+
+                <strong>
+                  ${escapeHtml(
+                    meal.recipe?.title ||
+                    meal.recipe?.name ||
+                    meal.custom_name ||
+                    meal.title ||
+                    "Meal"
+                  )}
+                </strong>
+
                 <div class="meal-actions">
-                  <button class="small edit-meal" data-id="${meal.id}">Edit</button>
-                  <button class="small danger delete-meal" data-id="${meal.id}">×</button>
+                  <button class="small delete-meal" data-id="${meal.id}">
+                    Delete
+                  </button>
                 </div>
               </div>
             `).join("")}
@@ -1977,7 +1305,7 @@
             <button
               class="small secondary add-day-meal"
               data-date="${key}"
-              style="margin-top:10px;width:100%"
+              style="width:100%;margin-top:10px"
             >
               + Add
             </button>
@@ -1986,7 +1314,7 @@
       }).join("");
 
       document.querySelectorAll(".add-day-meal").forEach(button => {
-        button.onclick = () => openMealEditor(null, button.dataset.date);
+        button.onclick = () => openMealEditor(button.dataset.date);
       });
 
       document.querySelectorAll(".delete-meal").forEach(button => {
@@ -1995,44 +1323,26 @@
             return;
           }
 
-          await api(`/api/meal-plan/${button.dataset.id}`, {
-            method: "DELETE"
-          });
+          try {
+            await api(`/api/meal-plan/${button.dataset.id}`, {
+              method: "DELETE"
+            });
 
-          loadPlanner();
-        };
-      });
-
-      document.querySelectorAll(".edit-meal").forEach(button => {
-        button.onclick = async () => {
-          const meal = meals.find(item => {
-            return String(item.id) === String(button.dataset.id);
-          });
-
-          openMealEditor(meal);
+            await loadPlanner();
+          } catch (error) {
+            $("planner-message").textContent = error.message;
+          }
         };
       });
     }
 
-    async function openMealEditor(meal = null, date = null) {
-      $("meal-id").value = meal?.id || "";
-      $("meal-date").value =
-        date ||
-        String(meal?.date || meal?.meal_date || dateKey(new Date())).slice(0, 10);
-
-      $("meal-type").value = meal?.meal_type || "Dinner";
-      $("meal-custom-name").value = meal?.custom_name || meal?.name || "";
-      $("meal-servings").value = meal?.servings || 2;
-      $("meal-notes").value = meal?.notes || "";
-
-      await loadRecipeOptions(meal?.recipe_id);
-      $("meal-recipe").value = meal?.recipe_id || "";
-
+    async function openMealEditor(date = null) {
+      $("meal-form").reset();
+      $("meal-id").value = "";
+      $("meal-date").value = date || dateKey(new Date());
+      $("meal-servings").value = 2;
       $("meal-message").textContent = "";
-      openModal("meal-modal");
-    }
 
-    async function loadRecipeOptions(selectedId = null) {
       if (!recipes.length) {
         const data = await api("/api/recipes");
         recipes = data.recipes || data || [];
@@ -2041,19 +1351,22 @@
       $("meal-recipe").innerHTML =
         `<option value="">Custom meal</option>` +
         recipes.map(recipe => `
-          <option value="${recipe.id}" ${String(recipe.id) === String(selectedId) ? "selected" : ""}>
+          <option value="${recipe.id}">
             ${escapeHtml(recipeName(recipe))}
           </option>
         `).join("");
+
+      openModal("meal-modal");
     }
 
     async function saveMeal(event) {
       event.preventDefault();
 
+      const selectedDate = $("meal-date").value;
       const id = $("meal-id").value;
 
       const payload = {
-        date: $("meal-date").value,
+        date: selectedDate,
         meal_type: $("meal-type").value,
         recipe_id: $("meal-recipe").value
           ? Number($("meal-recipe").value)
@@ -2069,26 +1382,25 @@
           body: JSON.stringify(payload)
         });
 
+        /*
+         * Automatically generate shopping-list ingredients for the
+         * day containing the meal. Custom meals are harmless because
+         * the generator only finds ingredients for recipe meals.
+         */
+        await api("/api/shopping-list/generate", {
+          method: "POST",
+          body: JSON.stringify({
+            start_date: selectedDate,
+            end_date: selectedDate
+          })
+        });
+
         closeModal("meal-modal");
-        loadPlanner();
+        await loadPlanner();
       } catch (error) {
-        $("meal-message").textContent = error.message;
+        $("meal-message").textContent =
+          error.message || "Unable to save meal.";
       }
-    }
-
-    function openShoppingForm() {
-      $("shopping-form").classList.remove("hidden");
-      $("shopping-name").focus();
-    }
-
-    function closeShoppingForm() {
-      $("shopping-form").classList.add("hidden");
-      $("shopping-name").value = "";
-      $("shopping-quantity").value = "";
-      $("shopping-category").value = "Other";
-      $("shopping-notes").value = "";
-      delete $("save-shopping").dataset.editingId;
-      $("save-shopping").textContent = "Add item";
     }
 
     async function loadShopping() {
@@ -2101,10 +1413,10 @@
 
         $("shopping-message").textContent = "";
 
-        const activeItems = items.filter(item => !item.purchased).length;
+        const remaining = items.filter(item => !item.purchased).length;
 
         $("shopping-count").textContent =
-          `${activeItems} item${activeItems === 1 ? "" : "s"} remaining`;
+          `${remaining} item${remaining === 1 ? "" : "s"} remaining`;
 
         if (!items.length) {
           $("shopping-list").innerHTML = `
@@ -2127,120 +1439,88 @@
           groups[category].push(item);
         });
 
-        Object.keys(groups)
-          .sort((a, b) => a.localeCompare(b))
-          .forEach(category => {
-            const categorySection = document.createElement("section");
-            categorySection.className = "shopping-category";
+        Object.keys(groups).sort().forEach(category => {
+          const section = document.createElement("section");
+          section.className = "shopping-category";
 
-            const header = document.createElement("button");
-            header.className = "shopping-category-header";
+          const header = document.createElement("button");
+          header.className = "shopping-category-header";
+          header.innerHTML = `
+            <span>${escapeHtml(category)}</span>
+            <span class="shopping-category-arrow">⌃</span>
+          `;
 
-            const title = document.createElement("span");
-            title.textContent = category;
+          header.onclick = () => {
+            section.classList.toggle("collapsed");
+          };
 
-            const arrow = document.createElement("span");
-            arrow.className = "shopping-category-arrow";
-            arrow.textContent = "⌃";
+          const itemContainer = document.createElement("div");
+          itemContainer.className = "shopping-items";
 
-            header.append(title, arrow);
+          groups[category]
+            .sort((a, b) => Number(a.purchased) - Number(b.purchased))
+            .forEach(item => {
+              const row = document.createElement("div");
+              row.className = "shopping-item";
 
-            header.onclick = () => {
-              categorySection.classList.toggle("collapsed");
-            };
+              if (item.purchased) {
+                row.classList.add("purchased");
+              }
 
-            const itemContainer = document.createElement("div");
-            itemContainer.className = "shopping-items";
+              const checkbox = document.createElement("input");
+              checkbox.type = "checkbox";
+              checkbox.checked = Boolean(item.purchased);
 
-            groups[category]
-              .sort((a, b) => Number(a.purchased) - Number(b.purchased))
-              .forEach(item => {
-                const row = document.createElement("div");
-                row.className = "shopping-item";
+              checkbox.onchange = async () => {
+                await api(`/api/shopping-list/items/${item.id}`, {
+                  method: "PUT",
+                  body: JSON.stringify({
+                    name: item.name,
+                    quantity: item.quantity,
+                    category: item.category,
+                    notes: item.notes,
+                    purchased: checkbox.checked
+                  })
+                });
 
-                if (item.purchased) {
-                  row.classList.add("purchased");
+                loadShopping();
+              };
+
+              const text = document.createElement("div");
+              text.className = "shopping-item-text";
+              text.textContent = [
+                item.quantity,
+                item.name,
+                item.notes ? `— ${item.notes}` : ""
+              ].filter(Boolean).join(" ");
+
+              const actions = document.createElement("div");
+              actions.className = "shopping-item-actions";
+
+              const remove = document.createElement("button");
+              remove.textContent = "×";
+              remove.title = "Delete item";
+
+              remove.onclick = async () => {
+                if (!confirm(`Delete "${item.name}"?`)) {
+                  return;
                 }
 
-                const checkbox = document.createElement("input");
-                checkbox.type = "checkbox";
-                checkbox.checked = Boolean(item.purchased);
+                await api(`/api/shopping-list/items/${item.id}`, {
+                  method: "DELETE"
+                });
 
-                checkbox.onchange = async () => {
-                  try {
-                    await api(`/api/shopping-list/items/${item.id}`, {
-                      method: "PUT",
-                      body: JSON.stringify({
-                        name: item.name,
-                        quantity: item.quantity,
-                        category: item.category,
-                        notes: item.notes,
-                        purchased: checkbox.checked
-                      })
-                    });
+                loadShopping();
+              };
 
-                    loadShopping();
-                  } catch (error) {
-                    $("shopping-message").textContent = error.message;
-                  }
-                };
+              actions.appendChild(remove);
+              row.append(checkbox, text, actions);
+              itemContainer.appendChild(row);
+            });
 
-                const text = document.createElement("div");
-                text.className = "shopping-item-text";
-
-                text.textContent = [
-                  item.quantity,
-                  item.name,
-                  item.notes ? `— ${item.notes}` : ""
-                ].filter(Boolean).join(" ");
-
-                const actions = document.createElement("div");
-                actions.className = "shopping-item-actions";
-
-                const edit = document.createElement("button");
-                edit.textContent = "✎";
-                edit.title = "Edit item";
-
-                edit.onclick = () => {
-                  $("shopping-form").classList.remove("hidden");
-                  $("shopping-name").value = item.name || "";
-                  $("shopping-quantity").value = item.quantity || "";
-                  $("shopping-category").value = item.category || "Other";
-                  $("shopping-notes").value = item.notes || "";
-                  $("save-shopping").dataset.editingId = item.id;
-                  $("save-shopping").textContent = "Save changes";
-                  $("shopping-name").focus();
-                };
-
-                const remove = document.createElement("button");
-                remove.className = "delete-shopping-item";
-                remove.textContent = "×";
-                remove.title = "Delete item";
-
-                remove.onclick = async () => {
-                  if (!confirm(`Delete "${item.name}"?`)) {
-                    return;
-                  }
-
-                  try {
-                    await api(`/api/shopping-list/items/${item.id}`, {
-                      method: "DELETE"
-                    });
-
-                    loadShopping();
-                  } catch (error) {
-                    $("shopping-message").textContent = error.message;
-                  }
-                };
-
-                actions.append(edit, remove);
-                row.append(checkbox, text, actions);
-                itemContainer.appendChild(row);
-              });
-
-            categorySection.append(header, itemContainer);
-            $("shopping-list").appendChild(categorySection);
-          });
+          section.append(header, itemContainer);
+          $("shopping-list").appendChild(section);
+        });
       } catch (error) {
         $("shopping-message").textContent = error.message;
       }
@@ -2250,32 +1530,22 @@
       const name = $("shopping-name").value.trim();
 
       if (!name) {
-        $("shopping-message").textContent = "Please enter an item name.";
+        $("shopping-message").textContent =
+          "Please enter an item name.";
         return;
       }
 
-      const editingId = $("save-shopping").dataset.editingId;
-
-      const payload = {
-        name,
-        quantity: $("shopping-quantity").value.trim() || null,
-        category: $("shopping-category").value || "Other",
-        notes: $("shopping-notes").value.trim() || null,
-        purchased: false
-      };
-
       try {
-        if (editingId) {
-          await api(`/api/shopping-list/items/${editingId}`, {
-            method: "PUT",
-            body: JSON.stringify(payload)
-          });
-        } else {
-          await api("/api/shopping-list/items", {
-            method: "POST",
-            body: JSON.stringify(payload)
-          });
-        }
+        await api("/api/shopping-list/items", {
+          method: "POST",
+          body: JSON.stringify({
+            name,
+            quantity: $("shopping-quantity").value.trim() || null,
+            category: $("shopping-category").value,
+            notes: $("shopping-notes").value.trim() || null,
+            purchased: false
+          })
+        });
 
         closeShoppingForm();
         loadShopping();
@@ -2285,7 +1555,8 @@
     }
 
     async function generateShoppingList() {
-      $("shopping-message").textContent = "Generating from this week's meals...";
+      $("shopping-message").textContent =
+        "Generating from meal plan...";
 
       try {
         const monday = mondayOfWeek(0);
@@ -2306,10 +1577,8 @@
       }
     }
 
-    async function login(event) {
+    $("login-form").onsubmit = async event => {
       event.preventDefault();
-
-      $("login-message").textContent = "Logging in...";
 
       try {
         await api("/api/auth/login", {
@@ -2320,16 +1589,14 @@
           })
         });
 
-        await checkSession();
+        checkSession();
       } catch (error) {
         $("login-message").textContent = error.message;
       }
-    }
+    };
 
-    async function register(event) {
+    $("register-form").onsubmit = async event => {
       event.preventDefault();
-
-      $("register-message").textContent = "Creating account...";
 
       try {
         await api("/api/auth/register", {
@@ -2341,53 +1608,11 @@
           })
         });
 
-        await checkSession();
+        checkSession();
       } catch (error) {
         $("register-message").textContent = error.message;
       }
-    }
-
-    async function logout() {
-      try {
-        await api("/api/auth/logout", {
-          method: "POST"
-        });
-      } catch {
-        // The local session is still cleared below.
-      }
-
-      currentUser = null;
-      showLogin();
-    }
-
-    function escapeHtml(value) {
-      return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
-    document.querySelectorAll("[data-view]").forEach(button => {
-      button.addEventListener("click", () => {
-        showView(button.dataset.view);
-      });
-    });
-
-    document.querySelectorAll("[data-close]").forEach(button => {
-      button.addEventListener("click", () => {
-        closeModal(button.dataset.close);
-      });
-    });
-
-    document.querySelectorAll(".modal-backdrop").forEach(backdrop => {
-      backdrop.addEventListener("click", event => {
-        if (event.target === backdrop) {
-          backdrop.classList.add("hidden");
-        }
-      });
-    });
+    };
 
     $("show-register").onclick = () => {
       $("login-form").classList.add("hidden");
@@ -2399,9 +1624,13 @@
       $("login-form").classList.remove("hidden");
     };
 
-    $("login-form").onsubmit = login;
-    $("register-form").onsubmit = register;
-    $("logout-button").onclick = logout;
+    $("logout-button").onclick = async () => {
+      await api("/api/auth/logout", {
+        method: "POST"
+      });
+
+      checkSession();
+    };
 
     $("theme-button").onclick = () => {
       const current = document.documentElement.dataset.theme;
@@ -2412,25 +1641,13 @@
     };
 
     $("recipe-search").oninput = renderRecipes;
-    $("new-recipe-button").onclick = () => openRecipeEditor();
-    $("import-recipe-button").onclick = () => {
-      $("import-form").reset();
-      $("import-preview").classList.add("hidden");
-      $("import-message").textContent = "";
-      openModal("import-modal");
-    };
-
-    $("recipe-form").onsubmit = saveRecipe;
-    $("import-form").onsubmit = importRecipe;
-    $("save-imported-recipe").onclick = saveImportedRecipe;
-
     $("previous-week").onclick = () => {
-      plannerOffset -= 1;
+      plannerOffset--;
       loadPlanner();
     };
 
     $("next-week").onclick = () => {
-      plannerOffset += 1;
+      plannerOffset++;
       loadPlanner();
     };
 
@@ -2443,10 +1660,29 @@
     $("save-shopping").onclick = saveShoppingItem;
     $("generate-shopping").onclick = generateShoppingList;
 
-    const savedTheme = localStorage.getItem("wilfordspace-theme");
+    document.querySelectorAll("[data-close]").forEach(button => {
+      button.onclick = () => closeModal(button.dataset.close);
+    });
+
+    document.querySelectorAll("[data-view]").forEach(button => {
+      button.onclick = () => showView(button.dataset.view);
+    });
+
+    function openShoppingForm() {
+      $("shopping-form").classList.remove("hidden");
+      $("shopping-name").focus();
+    }
+
+    function closeShoppingForm() {
+      $("shopping-form").classList.add("hidden");
+      $("shopping-name").value = "";
+      $("shopping-quantity").value = "";
+      $("shopping-category").value = "Other";
+      $("shopping-notes").value = "";
+    }
 
     document.documentElement.dataset.theme =
-      savedTheme || "dark";
+      localStorage.getItem("wilfordspace-theme") || "dark";
 
     checkSession();
   </script>
