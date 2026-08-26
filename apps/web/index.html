@@ -1258,83 +1258,152 @@
       }
     }
 
-    function renderPlanner(monday, meals) {
-      const today = dateKey(new Date());
+function renderPlanner(monday, meals) {
+  const today = dateKey(new Date());
 
-      $("planner-grid").innerHTML = Array.from({ length: 7 }, (_, index) => {
-        const day = new Date(monday);
-        day.setDate(day.getDate() + index);
+  $("planner-grid").innerHTML = Array.from(
+    { length: 7 },
+    (_, index) => {
+      const day = new Date(monday);
+      day.setDate(day.getDate() + index);
 
-        const key = dateKey(day);
+      const key = dateKey(day);
 
-        const dayMeals = meals.filter(meal => {
-          return String(meal.date || meal.meal_date).slice(0, 10) === key;
+      const dayMeals = meals.filter(meal => {
+        return String(
+          meal.date || meal.meal_date
+        ).slice(0, 10) === key;
+      });
+
+      return `
+        <div class="planner-day ${key === today ? "today" : ""}">
+          <div class="planner-day-title">
+            ${day.toLocaleDateString(undefined, {
+              weekday: "short"
+            })}
+
+            <div class="planner-date">
+              ${formatDate(day)}
+            </div>
+          </div>
+
+          ${dayMeals.map(meal => `
+            <div class="meal">
+              <div class="meal-type">
+                ${escapeHtml(meal.meal_type || "dinner")}
+              </div>
+
+              <strong>
+                ${escapeHtml(
+                  meal.recipe?.title ||
+                  meal.recipe?.name ||
+                  meal.custom_name ||
+                  meal.title ||
+                  "Meal"
+                )}
+              </strong>
+
+              ${
+                meal.notes
+                  ? `
+                    <div>
+                      ${escapeHtml(meal.notes)}
+                    </div>
+                  `
+                  : ""
+              }
+
+              <div class="meal-actions">
+                <button
+                  class="small delete-meal"
+                  data-id="${meal.id}"
+                  data-date="${key}"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          `).join("")}
+
+          <button
+            class="small secondary add-day-meal"
+            data-date="${key}"
+            style="width:100%;margin-top:10px"
+          >
+            + Add
+          </button>
+        </div>
+      `;
+    }
+  ).join("");
+
+  document.querySelectorAll(".add-day-meal").forEach(button => {
+    button.onclick = () => {
+      openMealEditor(button.dataset.date);
+    };
+  });
+
+  document.querySelectorAll(".delete-meal").forEach(button => {
+    button.onclick = async () => {
+      const mealId = button.dataset.id;
+      const mealDate = button.dataset.date;
+
+      if (!confirm("Delete this meal?")) {
+        return;
+      }
+
+      button.disabled = true;
+      $("planner-message").textContent =
+        "Deleting meal and updating shopping list...";
+
+      try {
+        await api(`/api/meal-plan/${mealId}`, {
+          method: "DELETE"
         });
 
-        return `
-          <div class="planner-day ${key === today ? "today" : ""}">
-            <div class="planner-day-title">
-              ${day.toLocaleDateString(undefined, { weekday: "short" })}
-              <div class="planner-date">${formatDate(day)}</div>
-            </div>
+        /*
+         * Regenerate the complete Monday-to-Sunday shopping list
+         * after deleting the meal.
+         */
+        const deletedDate = new Date(`${mealDate}T12:00:00`);
+        const weekStart = new Date(deletedDate);
 
-            ${dayMeals.map(meal => `
-              <div class="meal">
-                <div class="meal-type">
-                  ${escapeHtml(meal.meal_type || "dinner")}
-                </div>
+        weekStart.setDate(
+          weekStart.getDate() - weekStart.getDay() + 1
+        );
 
-                <strong>
-                  ${escapeHtml(
-                    meal.recipe?.title ||
-                    meal.recipe?.name ||
-                    meal.custom_name ||
-                    meal.title ||
-                    "Meal"
-                  )}
-                </strong>
+        /*
+         * JavaScript treats Sunday as day 0. The calculation above
+         * therefore moves Sunday forward to the following Monday.
+         * Correct it so Sunday belongs to the week that has just ended.
+         */
+        if (deletedDate.getDay() === 0) {
+          weekStart.setDate(weekStart.getDate() - 7);
+        }
 
-                <div class="meal-actions">
-                  <button class="small delete-meal" data-id="${meal.id}">
-                    Delete
-                  </button>
-                </div>
-              </div>
-            `).join("")}
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekEnd.getDate() + 6);
 
-            <button
-              class="small secondary add-day-meal"
-              data-date="${key}"
-              style="width:100%;margin-top:10px"
-            >
-              + Add
-            </button>
-          </div>
-        `;
-      }).join("");
+        await api("/api/shopping-list/generate", {
+          method: "POST",
+          body: JSON.stringify({
+            start_date: dateKey(weekStart),
+            end_date: dateKey(weekEnd)
+          })
+        });
 
-      document.querySelectorAll(".add-day-meal").forEach(button => {
-        button.onclick = () => openMealEditor(button.dataset.date);
-      });
+        $("planner-message").textContent =
+          "Meal deleted and shopping list updated.";
 
-      document.querySelectorAll(".delete-meal").forEach(button => {
-        button.onclick = async () => {
-          if (!confirm("Delete this meal?")) {
-            return;
-          }
-
-          try {
-            await api(`/api/meal-plan/${button.dataset.id}`, {
-              method: "DELETE"
-            });
-
-            await loadPlanner();
-          } catch (error) {
-            $("planner-message").textContent = error.message;
-          }
-        };
-      });
-    }
+        await loadPlanner();
+      } catch (error) {
+        button.disabled = false;
+        $("planner-message").textContent =
+          error.message || "Unable to delete meal.";
+      }
+    };
+  });
+}
 
     async function openMealEditor(date = null) {
       $("meal-form").reset();
