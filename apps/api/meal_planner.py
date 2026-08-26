@@ -17,7 +17,7 @@ class MealPlanRequest(BaseModel):
 
     meal_type: str = "dinner"
 
-    title: str = ""
+    title: Optional[str] = ""
     custom_name: Optional[str] = None
 
     recipe_id: Optional[int] = None
@@ -28,7 +28,7 @@ class MealPlanRequest(BaseModel):
         le=100,
     )
 
-    notes: str = ""
+    notes: Optional[str] = ""
 
 
 class MealPlanUpdateRequest(BaseModel):
@@ -129,15 +129,22 @@ async def get_authenticated_household(
     return user, household
 
 
-def get_request_date(payload):
+def get_meal_date(payload):
     return payload.date or payload.meal_date
 
 
-def get_request_title(payload):
+def get_meal_title(payload):
     if payload.custom_name is not None:
         return payload.custom_name.strip()
 
-    return (payload.title or "").strip()
+    if payload.title is not None:
+        return payload.title.strip()
+
+    return ""
+
+
+def clean_notes(value):
+    return (value or "").strip()
 
 
 def meal_to_dict(row):
@@ -167,35 +174,6 @@ def meal_to_dict(row):
         "notes": row["notes"],
         "recipe": recipe,
     }
-
-
-async def fetch_meal_by_id(
-    connection,
-    meal_id: int,
-    household_id: int,
-):
-    return await connection.fetchrow(
-        """
-        SELECT
-            mpe.id,
-            mpe.household_id,
-            mpe.recipe_id,
-            mpe.meal_date,
-            mpe.meal_type,
-            mpe.title,
-            mpe.servings,
-            mpe.notes,
-            r.title AS recipe_title,
-            r.image_url AS recipe_image_url
-        FROM meal_plan_entries mpe
-        LEFT JOIN recipes r
-            ON r.id = mpe.recipe_id
-        WHERE mpe.id = $1
-          AND mpe.household_id = $2
-        """,
-        meal_id,
-        household_id,
-    )
 
 
 async def validate_recipe(
@@ -298,15 +276,15 @@ async def create_meal(
         wilfordspace_session
     )
 
-    selected_date = get_request_date(payload)
+    selected_date = get_meal_date(payload)
 
     if selected_date is None:
         raise HTTPException(
             status_code=422,
-            detail="A date is required.",
+            detail="A meal date is required.",
         )
 
-    title = get_request_title(payload)
+    title = get_meal_title(payload)
 
     if payload.recipe_id is None and not title:
         raise HTTPException(
@@ -355,20 +333,11 @@ async def create_meal(
             payload.meal_type or "dinner",
             title,
             payload.servings,
-            payload.notes or "",
+            clean_notes(payload.notes),
             user["id"],
         )
 
         meal_id = row["id"]
-
-        await connection.execute(
-            """
-            UPDATE meal_plan_entries
-            SET updated_at = NOW()
-            WHERE id = $1
-            """,
-            meal_id,
-        )
     finally:
         await connection.close()
 
@@ -395,8 +364,20 @@ async def update_meal(
     connection = await get_connection()
 
     try:
-        existing = await fetch_meal_by_id(
-            connection,
+        existing = await connection.fetchrow(
+            """
+            SELECT
+                id,
+                recipe_id,
+                meal_date,
+                meal_type,
+                title,
+                servings,
+                notes
+            FROM meal_plan_entries
+            WHERE id = $1
+              AND household_id = $2
+            """,
             meal_id,
             household["id"],
         )
@@ -439,7 +420,7 @@ async def update_meal(
         )
 
         notes = (
-            payload.notes
+            clean_notes(payload.notes)
             if payload.notes is not None
             else existing["notes"]
         )
@@ -475,7 +456,7 @@ async def update_meal(
             meal_type or "dinner",
             title,
             servings or 4,
-            notes or "",
+            notes,
             meal_id,
             household["id"],
         )
