@@ -12,13 +12,11 @@ router = APIRouter(
 
 
 class MealPlanRequest(BaseModel):
-    # The frontend uses "date", while the original backend used "meal_date".
     date: Optional[date_type] = None
     meal_date: Optional[date_type] = None
 
     meal_type: str = "dinner"
 
-    # The frontend uses "custom_name", while the original backend used "title".
     title: str = ""
     custom_name: Optional[str] = None
 
@@ -43,6 +41,7 @@ class MealPlanUpdateRequest(BaseModel):
     custom_name: Optional[str] = None
 
     recipe_id: Optional[int] = None
+
     servings: Optional[int] = Field(
         default=None,
         ge=1,
@@ -53,11 +52,6 @@ class MealPlanUpdateRequest(BaseModel):
 
 
 async def ensure_meal_plan_table():
-    """
-    Create the meal-plan table if it does not already exist.
-    This uses the existing asyncpg database connection used by WilfordSpace.
-    """
-
     from main import get_connection
 
     connection = await get_connection()
@@ -92,20 +86,18 @@ async def ensure_meal_plan_table():
         await connection.close()
 
 
-async def get_authenticated_household(session: str | None):
-    """
-    Return the currently authenticated user and their household.
-    """
-
+async def get_authenticated_household(
+    wilfordspace_session: str | None,
+):
     from main import get_connection, get_current_user
 
-    user = await get_current_user(session)
-
-    if not user:
+    if not wilfordspace_session:
         raise HTTPException(
             status_code=401,
             detail="Authentication required.",
         )
+
+    user = await get_current_user(wilfordspace_session)
 
     connection = await get_connection()
 
@@ -137,31 +129,19 @@ async def get_authenticated_household(session: str | None):
     return user, household
 
 
-def get_request_date(payload) -> date_type | None:
-    """
-    Accept both frontend and backend date field names.
-    """
-
+def get_request_date(payload):
     return payload.date or payload.meal_date
 
 
-def get_request_title(payload) -> str:
-    """
-    Accept both frontend and backend custom-meal field names.
-    """
-
-    if getattr(payload, "custom_name", None) is not None:
+def get_request_title(payload):
+    if payload.custom_name is not None:
         return payload.custom_name.strip()
 
     return (payload.title or "").strip()
 
 
 def meal_to_dict(row):
-    """
-    Convert an asyncpg Record into the response format expected by
-    the WilfordSpace frontend.
-    """
-
+    meal_date = row["meal_date"]
     recipe_id = row["recipe_id"]
 
     recipe = None
@@ -173,8 +153,6 @@ def meal_to_dict(row):
             "name": row["recipe_title"],
             "image_url": row["recipe_image_url"],
         }
-
-    meal_date = row["meal_date"]
 
     return {
         "id": row["id"],
@@ -191,7 +169,11 @@ def meal_to_dict(row):
     }
 
 
-async def fetch_meal_by_id(connection, meal_id: int, household_id: int):
+async def fetch_meal_by_id(
+    connection,
+    meal_id: int,
+    household_id: int,
+):
     return await connection.fetchrow(
         """
         SELECT
@@ -246,11 +228,13 @@ async def validate_recipe(
 async def list_meals(
     start_date: Optional[date_type] = Query(default=None),
     end_date: Optional[date_type] = Query(default=None),
-    session: str | None = Cookie(default=None),
+    wilfordspace_session: str | None = Cookie(default=None),
 ):
     await ensure_meal_plan_table()
 
-    user, household = await get_authenticated_household(session)
+    _, household = await get_authenticated_household(
+        wilfordspace_session
+    )
 
     if start_date is None:
         today = date_type.today()
@@ -306,11 +290,13 @@ async def list_meals(
 @router.post("")
 async def create_meal(
     payload: MealPlanRequest,
-    session: str | None = Cookie(default=None),
+    wilfordspace_session: str | None = Cookie(default=None),
 ):
     await ensure_meal_plan_table()
 
-    user, household = await get_authenticated_household(session)
+    user, household = await get_authenticated_household(
+        wilfordspace_session
+    )
 
     selected_date = get_request_date(payload)
 
@@ -321,6 +307,12 @@ async def create_meal(
         )
 
     title = get_request_title(payload)
+
+    if payload.recipe_id is None and not title:
+        raise HTTPException(
+            status_code=422,
+            detail="Choose a recipe or enter a custom meal name.",
+        )
 
     from main import get_connection
 
@@ -390,11 +382,13 @@ async def create_meal(
 async def update_meal(
     meal_id: int,
     payload: MealPlanUpdateRequest,
-    session: str | None = Cookie(default=None),
+    wilfordspace_session: str | None = Cookie(default=None),
 ):
     await ensure_meal_plan_table()
 
-    user, household = await get_authenticated_household(session)
+    _, household = await get_authenticated_household(
+        wilfordspace_session
+    )
 
     from main import get_connection
 
@@ -425,12 +419,12 @@ async def update_meal(
             else existing["meal_type"]
         )
 
-        title = existing["title"]
-
         if payload.custom_name is not None:
             title = payload.custom_name.strip()
         elif payload.title is not None:
             title = payload.title.strip()
+        else:
+            title = existing["title"]
 
         recipe_id = (
             payload.recipe_id
@@ -449,6 +443,12 @@ async def update_meal(
             if payload.notes is not None
             else existing["notes"]
         )
+
+        if recipe_id is None and not title:
+            raise HTTPException(
+                status_code=422,
+                detail="Choose a recipe or enter a custom meal name.",
+            )
 
         await validate_recipe(
             connection,
@@ -491,11 +491,13 @@ async def update_meal(
 @router.delete("/{meal_id}")
 async def delete_meal(
     meal_id: int,
-    session: str | None = Cookie(default=None),
+    wilfordspace_session: str | None = Cookie(default=None),
 ):
     await ensure_meal_plan_table()
 
-    user, household = await get_authenticated_household(session)
+    _, household = await get_authenticated_household(
+        wilfordspace_session
+    )
 
     from main import get_connection
 
