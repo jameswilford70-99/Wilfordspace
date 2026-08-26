@@ -1,7 +1,7 @@
 from datetime import date, timedelta
 
 from fastapi import APIRouter, Cookie, HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 router = APIRouter(
@@ -39,13 +39,23 @@ async def get_connection():
 async def get_household(session: str | None):
     from main import get_current_user
 
+    if not session:
+        raise HTTPException(
+            status_code=401,
+            detail="Authentication required",
+        )
+
     user = await get_current_user(session)
+
     connection = await get_connection()
 
     try:
         household = await connection.fetchrow(
             """
-            SELECT h.id, h.name, hm.role
+            SELECT
+                h.id,
+                h.name,
+                hm.role
             FROM households h
             JOIN household_members hm
                 ON hm.household_id = h.id
@@ -78,10 +88,12 @@ async def ensure_shopping_tables():
                 household_id BIGINT NOT NULL
                     REFERENCES households(id)
                     ON DELETE CASCADE,
-                name VARCHAR(150) NOT NULL DEFAULT 'Main shopping list',
+                name VARCHAR(150) NOT NULL
+                    DEFAULT 'Main shopping list',
                 created_by BIGINT NOT NULL
                     REFERENCES users(id),
-                created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+                created_at TIMESTAMPTZ NOT NULL
+                    DEFAULT NOW()
             );
 
             CREATE UNIQUE INDEX IF NOT EXISTS
@@ -94,17 +106,22 @@ async def ensure_shopping_tables():
                     REFERENCES shopping_lists(id)
                     ON DELETE CASCADE,
                 name VARCHAR(250) NOT NULL,
-                quantity VARCHAR(100) NOT NULL DEFAULT '',
-                category VARCHAR(80) NOT NULL DEFAULT 'Other',
+                quantity VARCHAR(100) NOT NULL
+                    DEFAULT '',
+                category VARCHAR(80) NOT NULL
+                    DEFAULT 'Other',
                 notes TEXT NOT NULL DEFAULT '',
-                purchased BOOLEAN NOT NULL DEFAULT FALSE,
+                purchased BOOLEAN NOT NULL
+                    DEFAULT FALSE,
                 source_recipe_id BIGINT
                     REFERENCES recipes(id)
                     ON DELETE SET NULL,
                 created_by BIGINT NOT NULL
                     REFERENCES users(id),
-                created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-                updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+                created_at TIMESTAMPTZ NOT NULL
+                    DEFAULT NOW(),
+                updated_at TIMESTAMPTZ NOT NULL
+                    DEFAULT NOW()
             );
 
             CREATE INDEX IF NOT EXISTS
@@ -120,10 +137,19 @@ async def ensure_shopping_tables():
         await connection.close()
 
 
-async def get_or_create_list(connection, household_id, user_id):
+async def get_or_create_list(
+    connection,
+    household_id,
+    user_id,
+):
     shopping_list = await connection.fetchrow(
         """
-        SELECT id, household_id, name, created_by, created_at
+        SELECT
+            id,
+            household_id,
+            name,
+            created_by,
+            created_at
         FROM shopping_lists
         WHERE household_id = $1
           AND name = 'Main shopping list'
@@ -137,10 +163,22 @@ async def get_or_create_list(connection, household_id, user_id):
 
     return await connection.fetchrow(
         """
-        INSERT INTO shopping_lists
-            (household_id, name, created_by)
-        VALUES ($1, 'Main shopping list', $2)
-        RETURNING id, household_id, name, created_by, created_at
+        INSERT INTO shopping_lists (
+            household_id,
+            name,
+            created_by
+        )
+        VALUES (
+            $1,
+            'Main shopping list',
+            $2
+        )
+        RETURNING
+            id,
+            household_id,
+            name,
+            created_by,
+            created_at
         """,
         household_id,
         user_id,
@@ -171,7 +209,10 @@ async def get_shopping_list(
     wilfordspace_session: str | None = Cookie(default=None),
 ):
     await ensure_shopping_tables()
-    user, household = await get_household(wilfordspace_session)
+
+    user, household = await get_household(
+        wilfordspace_session
+    )
 
     connection = await get_connection()
 
@@ -185,27 +226,50 @@ async def get_shopping_list(
         if include_purchased:
             items = await connection.fetch(
                 """
-                SELECT id, shopping_list_id, name, quantity,
-                       category, notes, purchased,
-                       source_recipe_id, created_by,
-                       created_at, updated_at
+                SELECT
+                    id,
+                    shopping_list_id,
+                    name,
+                    quantity,
+                    category,
+                    notes,
+                    purchased,
+                    source_recipe_id,
+                    created_by,
+                    created_at,
+                    updated_at
                 FROM shopping_list_items
                 WHERE shopping_list_id = $1
-                ORDER BY purchased, category, name, id
+                ORDER BY
+                    purchased,
+                    category,
+                    name,
+                    id
                 """,
                 shopping_list["id"],
             )
         else:
             items = await connection.fetch(
                 """
-                SELECT id, shopping_list_id, name, quantity,
-                       category, notes, purchased,
-                       source_recipe_id, created_by,
-                       created_at, updated_at
+                SELECT
+                    id,
+                    shopping_list_id,
+                    name,
+                    quantity,
+                    category,
+                    notes,
+                    purchased,
+                    source_recipe_id,
+                    created_by,
+                    created_at,
+                    updated_at
                 FROM shopping_list_items
                 WHERE shopping_list_id = $1
                   AND purchased = FALSE
-                ORDER BY category, name, id
+                ORDER BY
+                    category,
+                    name,
+                    id
                 """,
                 shopping_list["id"],
             )
@@ -213,7 +277,9 @@ async def get_shopping_list(
         result = []
 
         for item in items:
-            result.append(await item_response(connection, item))
+            result.append(
+                await item_response(connection, item)
+            )
 
         return {
             "list": dict(shopping_list),
@@ -229,7 +295,10 @@ async def add_shopping_item(
     wilfordspace_session: str | None = Cookie(default=None),
 ):
     await ensure_shopping_tables()
-    user, household = await get_household(wilfordspace_session)
+
+    user, household = await get_household(
+        wilfordspace_session
+    )
 
     name = data.name.strip()
 
@@ -263,10 +332,18 @@ async def add_shopping_item(
                 created_by
             )
             VALUES ($1, $2, $3, $4, $5, $6)
-            RETURNING id, shopping_list_id, name, quantity,
-                      category, notes, purchased,
-                      source_recipe_id, created_by,
-                      created_at, updated_at
+            RETURNING
+                id,
+                shopping_list_id,
+                name,
+                quantity,
+                category,
+                notes,
+                purchased,
+                source_recipe_id,
+                created_by,
+                created_at,
+                updated_at
             """,
             shopping_list["id"],
             name,
@@ -288,7 +365,10 @@ async def update_shopping_item(
     wilfordspace_session: str | None = Cookie(default=None),
 ):
     await ensure_shopping_tables()
-    user, household = await get_household(wilfordspace_session)
+
+    user, household = await get_household(
+        wilfordspace_session
+    )
 
     name = data.name.strip()
 
@@ -310,7 +390,8 @@ async def update_shopping_item(
         item = await connection.fetchrow(
             """
             UPDATE shopping_list_items
-            SET name = $1,
+            SET
+                name = $1,
                 quantity = $2,
                 category = $3,
                 notes = $4,
@@ -318,10 +399,18 @@ async def update_shopping_item(
                 updated_at = NOW()
             WHERE id = $6
               AND shopping_list_id = $7
-            RETURNING id, shopping_list_id, name, quantity,
-                      category, notes, purchased,
-                      source_recipe_id, created_by,
-                      created_at, updated_at
+            RETURNING
+                id,
+                shopping_list_id,
+                name,
+                quantity,
+                category,
+                notes,
+                purchased,
+                source_recipe_id,
+                created_by,
+                created_at,
+                updated_at
             """,
             name,
             data.quantity.strip(),
@@ -349,7 +438,10 @@ async def delete_shopping_item(
     wilfordspace_session: str | None = Cookie(default=None),
 ):
     await ensure_shopping_tables()
-    user, household = await get_household(wilfordspace_session)
+
+    user, household = await get_household(
+        wilfordspace_session
+    )
 
     connection = await get_connection()
 
@@ -376,7 +468,9 @@ async def delete_shopping_item(
                 detail="Shopping item not found",
             )
 
-        return {"message": "Shopping item deleted"}
+        return {
+            "message": "Shopping item deleted",
+        }
     finally:
         await connection.close()
 
@@ -399,7 +493,22 @@ async def generate_shopping_list(
         )
 
     await ensure_shopping_tables()
-    user, household = await get_household(wilfordspace_session)
+
+    user, household = await get_household(
+        wilfordspace_session
+    )
+
+    start_date = data.start_date
+    end_date = data.end_date
+
+    # The automatic frontend update sends the date of the meal
+    # that was just saved. Convert that single date into the
+    # complete Monday-to-Sunday week.
+    if start_date == end_date:
+        start_date = start_date - timedelta(
+            days=start_date.weekday()
+        )
+        end_date = start_date + timedelta(days=6)
 
     connection = await get_connection()
 
@@ -411,13 +520,30 @@ async def generate_shopping_list(
                 user["id"],
             )
 
+            # Remove only unpurchased automatically generated
+            # recipe ingredients.
+            #
+            # Manual items have source_recipe_id set to NULL.
+            # Purchased items are deliberately preserved.
+            await connection.execute(
+                """
+                DELETE FROM shopping_list_items
+                WHERE shopping_list_id = $1
+                  AND source_recipe_id IS NOT NULL
+                  AND purchased = FALSE
+                """,
+                shopping_list["id"],
+            )
+
             ingredients = await connection.fetch(
                 """
                 SELECT
                     r.id AS recipe_id,
                     r.title AS recipe_title,
                     ri.quantity,
-                    ri.name
+                    ri.name,
+                    ri.position,
+                    ri.id AS ingredient_id
                 FROM meal_plan_entries mp
                 JOIN recipes r
                     ON r.id = mp.recipe_id
@@ -427,19 +553,26 @@ async def generate_shopping_list(
                 WHERE mp.household_id = $1
                   AND mp.meal_date BETWEEN $2 AND $3
                   AND mp.recipe_id IS NOT NULL
-                ORDER BY r.title, ri.position, ri.id
+                ORDER BY
+                    r.title,
+                    ri.position,
+                    ri.id
                 """,
                 household["id"],
-                data.start_date,
-                data.end_date,
+                start_date,
+                end_date,
             )
 
             added = 0
+            skipped = 0
 
             for ingredient in ingredients:
-                ingredient_name = ingredient["name"].strip()
+                ingredient_name = (
+                    ingredient["name"] or ""
+                ).strip()
 
                 if not ingredient_name:
+                    skipped += 1
                     continue
 
                 existing = await connection.fetchval(
@@ -458,6 +591,7 @@ async def generate_shopping_list(
                 )
 
                 if existing:
+                    skipped += 1
                     continue
 
                 await connection.execute(
@@ -475,7 +609,9 @@ async def generate_shopping_list(
                     """,
                     shopping_list["id"],
                     ingredient_name,
-                    (ingredient["quantity"] or "").strip(),
+                    (
+                        ingredient["quantity"] or ""
+                    ).strip(),
                     f"From {ingredient['recipe_title']}",
                     ingredient["recipe_id"],
                     user["id"],
@@ -486,6 +622,9 @@ async def generate_shopping_list(
             return {
                 "message": "Shopping list generated",
                 "added": added,
+                "skipped": skipped,
+                "start_date": start_date.isoformat(),
+                "end_date": end_date.isoformat(),
             }
     finally:
         await connection.close()
