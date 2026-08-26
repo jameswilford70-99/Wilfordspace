@@ -413,7 +413,7 @@ async def generate_shopping_list(
 
             ingredients = await connection.fetch(
                 """
-                SELECT DISTINCT
+                SELECT
                     r.id AS recipe_id,
                     r.title AS recipe_title,
                     ri.quantity,
