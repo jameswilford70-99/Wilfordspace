@@ -14,6 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from jose import JWTError, jwt
 from pydantic import BaseModel, EmailStr
 from pwdlib import PasswordHash
+from meal_planner import router as meal_plan_router
 
 
 DATABASE_URL = os.environ["DATABASE_URL"]
@@ -38,6 +39,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(meal_plan_router)
 
 class RegisterRequest(BaseModel):
     name: str
