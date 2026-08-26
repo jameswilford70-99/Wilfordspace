@@ -1,7 +1,7 @@
-from datetime import date
+from datetime import date as date_type
 from typing import Optional
 
-from fastapi import APIRouter, Cookie, HTTPException
+from fastapi import APIRouter, Cookie, HTTPException, Query
 from pydantic import BaseModel, Field
 
 
@@ -12,16 +12,52 @@ router = APIRouter(
 
 
 class MealPlanRequest(BaseModel):
-    meal_date: date
+    # The frontend uses "date", while the original backend used "meal_date".
+    date: Optional[date_type] = None
+    meal_date: Optional[date_type] = None
+
     meal_type: str = "dinner"
+
+    # The frontend uses "custom_name", while the original backend used "title".
     title: str = ""
+    custom_name: Optional[str] = None
+
     recipe_id: Optional[int] = None
-    servings: int = Field(default=4, ge=1, le=100)
+
+    servings: int = Field(
+        default=4,
+        ge=1,
+        le=100,
+    )
+
     notes: str = ""
 
 
+class MealPlanUpdateRequest(BaseModel):
+    date: Optional[date_type] = None
+    meal_date: Optional[date_type] = None
+
+    meal_type: Optional[str] = None
+
+    title: Optional[str] = None
+    custom_name: Optional[str] = None
+
+    recipe_id: Optional[int] = None
+    servings: Optional[int] = Field(
+        default=None,
+        ge=1,
+        le=100,
+    )
+
+    notes: Optional[str] = None
+
+
 async def ensure_meal_plan_table():
-    # Imported at request time to avoid a circular import with main.py.
+    """
+    Create the meal-plan table if it does not already exist.
+    This uses the existing asyncpg database connection used by WilfordSpace.
+    """
+
     from main import get_connection
 
     connection = await get_connection()
@@ -57,15 +93,29 @@ async def ensure_meal_plan_table():
 
 
 async def get_authenticated_household(session: str | None):
+    """
+    Return the currently authenticated user and their household.
+    """
+
     from main import get_connection, get_current_user
 
     user = await get_current_user(session)
+
+    if not user:
+        raise HTTPException(
+            status_code=401,
+            detail="Authentication required.",
+        )
+
     connection = await get_connection()
 
     try:
         household = await connection.fetchrow(
             """
-            SELECT h.id, h.name, hm.role
+            SELECT
+                h.id,
+                h.name,
+                hm.role
             FROM households h
             JOIN household_members hm
                 ON hm.household_id = h.id
@@ -80,34 +130,90 @@ async def get_authenticated_household(session: str | None):
 
     if not household:
         raise HTTPException(
-            status_code=404,
-            detail="Household not found",
+            status_code=400,
+            detail="Your account is not assigned to a household.",
         )
 
-    return user, dict(household)
+    return user, household
 
 
-def validate_meal_type(value: str) -> str:
-    meal_type = value.strip().lower()
+def get_request_date(payload) -> date_type | None:
+    """
+    Accept both frontend and backend date field names.
+    """
 
-    allowed = {
-        "breakfast",
-        "lunch",
-        "dinner",
-        "snack",
-        "other",
+    return payload.date or payload.meal_date
+
+
+def get_request_title(payload) -> str:
+    """
+    Accept both frontend and backend custom-meal field names.
+    """
+
+    if getattr(payload, "custom_name", None) is not None:
+        return payload.custom_name.strip()
+
+    return (payload.title or "").strip()
+
+
+def meal_to_dict(row):
+    """
+    Convert an asyncpg Record into the response format expected by
+    the WilfordSpace frontend.
+    """
+
+    recipe_id = row["recipe_id"]
+
+    recipe = None
+
+    if recipe_id is not None:
+        recipe = {
+            "id": recipe_id,
+            "title": row["recipe_title"],
+            "name": row["recipe_title"],
+            "image_url": row["recipe_image_url"],
+        }
+
+    meal_date = row["meal_date"]
+
+    return {
+        "id": row["id"],
+        "date": meal_date.isoformat() if meal_date else None,
+        "meal_date": meal_date.isoformat() if meal_date else None,
+        "meal_type": row["meal_type"],
+        "recipe_id": recipe_id,
+        "title": row["title"],
+        "name": row["title"],
+        "custom_name": row["title"],
+        "servings": row["servings"],
+        "notes": row["notes"],
+        "recipe": recipe,
     }
 
-    if meal_type not in allowed:
-        raise HTTPException(
-            status_code=400,
-            detail=(
-                "Meal type must be breakfast, lunch, dinner, "
-                "snack, or other"
-            ),
-        )
 
-    return meal_type
+async def fetch_meal_by_id(connection, meal_id: int, household_id: int):
+    return await connection.fetchrow(
+        """
+        SELECT
+            mpe.id,
+            mpe.household_id,
+            mpe.recipe_id,
+            mpe.meal_date,
+            mpe.meal_type,
+            mpe.title,
+            mpe.servings,
+            mpe.notes,
+            r.title AS recipe_title,
+            r.image_url AS recipe_image_url
+        FROM meal_plan_entries mpe
+        LEFT JOIN recipes r
+            ON r.id = mpe.recipe_id
+        WHERE mpe.id = $1
+          AND mpe.household_id = $2
+        """,
+        meal_id,
+        household_id,
+    )
 
 
 async def validate_recipe(
@@ -116,11 +222,11 @@ async def validate_recipe(
     household_id: int,
 ):
     if recipe_id is None:
-        return None
+        return
 
     recipe = await connection.fetchrow(
         """
-        SELECT id, title
+        SELECT id
         FROM recipes
         WHERE id = $1
           AND household_id = $2
@@ -132,257 +238,290 @@ async def validate_recipe(
     if not recipe:
         raise HTTPException(
             status_code=404,
-            detail="Recipe not found in this household",
+            detail="The selected recipe was not found.",
         )
-
-    return recipe
-
-
-async def meal_response(connection, meal):
-    recipe_title = None
-
-    if meal["recipe_id"] is not None:
-        recipe_title = await connection.fetchval(
-            """
-            SELECT title
-            FROM recipes
-            WHERE id = $1
-            """,
-            meal["recipe_id"],
-        )
-
-    result = dict(meal)
-    result["recipe_title"] = recipe_title
-
-    return result
 
 
 @router.get("")
 async def list_meals(
-    start_date: date,
-    end_date: date,
-    wilfordspace_session: str | None = Cookie(default=None),
+    start_date: Optional[date_type] = Query(default=None),
+    end_date: Optional[date_type] = Query(default=None),
+    session: str | None = Cookie(default=None),
 ):
-    if end_date < start_date:
-        raise HTTPException(
-            status_code=400,
-            detail="end_date must not be before start_date",
-        )
-
-    if (end_date - start_date).days > 31:
-        raise HTTPException(
-            status_code=400,
-            detail="Date range cannot exceed 31 days",
-        )
-
     await ensure_meal_plan_table()
-    _, household = await get_authenticated_household(
-        wilfordspace_session
-    )
+
+    user, household = await get_authenticated_household(session)
+
+    if start_date is None:
+        today = date_type.today()
+        start_date = today.fromordinal(
+            today.toordinal() - today.weekday()
+        )
+
+    if end_date is None:
+        end_date = start_date.fromordinal(
+            start_date.toordinal() + 6
+        )
 
     from main import get_connection
 
     connection = await get_connection()
 
     try:
-        meals = await connection.fetch(
+        rows = await connection.fetch(
             """
-            SELECT id, household_id, recipe_id, meal_date,
-                   meal_type, title, servings, notes,
-                   created_by, created_at, updated_at
-            FROM meal_plan_entries
-            WHERE household_id = $1
-              AND meal_date BETWEEN $2 AND $3
-            ORDER BY meal_date, meal_type, id
+            SELECT
+                mpe.id,
+                mpe.household_id,
+                mpe.recipe_id,
+                mpe.meal_date,
+                mpe.meal_type,
+                mpe.title,
+                mpe.servings,
+                mpe.notes,
+                r.title AS recipe_title,
+                r.image_url AS recipe_image_url
+            FROM meal_plan_entries mpe
+            LEFT JOIN recipes r
+                ON r.id = mpe.recipe_id
+            WHERE mpe.household_id = $1
+              AND mpe.meal_date BETWEEN $2 AND $3
+            ORDER BY
+                mpe.meal_date,
+                mpe.meal_type,
+                mpe.id
             """,
             household["id"],
             start_date,
             end_date,
         )
-
-        result = []
-
-        for meal in meals:
-            result.append(
-                await meal_response(connection, meal)
-            )
-
-        return {"meals": result}
     finally:
         await connection.close()
+
+    return {
+        "meals": [meal_to_dict(row) for row in rows]
+    }
 
 
 @router.post("")
 async def create_meal(
-    data: MealPlanRequest,
-    wilfordspace_session: str | None = Cookie(default=None),
+    payload: MealPlanRequest,
+    session: str | None = Cookie(default=None),
 ):
     await ensure_meal_plan_table()
-    user, household = await get_authenticated_household(
-        wilfordspace_session
-    )
 
-    meal_type = validate_meal_type(data.meal_type)
-    title = data.title.strip()
-    notes = data.notes.strip()
+    user, household = await get_authenticated_household(session)
+
+    selected_date = get_request_date(payload)
+
+    if selected_date is None:
+        raise HTTPException(
+            status_code=422,
+            detail="A date is required.",
+        )
+
+    title = get_request_title(payload)
 
     from main import get_connection
 
     connection = await get_connection()
 
     try:
-        async with connection.transaction():
-            recipe = await validate_recipe(
-                connection,
-                data.recipe_id,
-                household["id"],
-            )
+        await validate_recipe(
+            connection,
+            payload.recipe_id,
+            household["id"],
+        )
 
-            if data.recipe_id is not None and not title:
-                title = recipe["title"]
-
-            if not title:
-                raise HTTPException(
-                    status_code=400,
-                    detail="A meal title or recipe is required",
-                )
-
-            meal = await connection.fetchrow(
-                """
-                INSERT INTO meal_plan_entries (
-                    household_id,
-                    recipe_id,
-                    meal_date,
-                    meal_type,
-                    title,
-                    servings,
-                    notes,
-                    created_by
-                )
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-                RETURNING id, household_id, recipe_id, meal_date,
-                          meal_type, title, servings, notes,
-                          created_by, created_at, updated_at
-                """,
-                household["id"],
-                data.recipe_id,
-                data.meal_date,
+        row = await connection.fetchrow(
+            """
+            INSERT INTO meal_plan_entries (
+                household_id,
+                recipe_id,
+                meal_date,
                 meal_type,
                 title,
-                data.servings,
+                servings,
                 notes,
-                user["id"],
+                created_by
             )
+            VALUES (
+                $1,
+                $2,
+                $3,
+                $4,
+                $5,
+                $6,
+                $7,
+                $8
+            )
+            RETURNING id
+            """,
+            household["id"],
+            payload.recipe_id,
+            selected_date,
+            payload.meal_type or "dinner",
+            title,
+            payload.servings,
+            payload.notes or "",
+            user["id"],
+        )
 
-            return await meal_response(connection, meal)
+        meal_id = row["id"]
+
+        await connection.execute(
+            """
+            UPDATE meal_plan_entries
+            SET updated_at = NOW()
+            WHERE id = $1
+            """,
+            meal_id,
+        )
     finally:
         await connection.close()
+
+    return {
+        "message": "Meal created successfully.",
+        "id": meal_id,
+    }
 
 
 @router.put("/{meal_id}")
 async def update_meal(
     meal_id: int,
-    data: MealPlanRequest,
-    wilfordspace_session: str | None = Cookie(default=None),
+    payload: MealPlanUpdateRequest,
+    session: str | None = Cookie(default=None),
 ):
     await ensure_meal_plan_table()
-    user, household = await get_authenticated_household(
-        wilfordspace_session
-    )
 
-    meal_type = validate_meal_type(data.meal_type)
-    title = data.title.strip()
-    notes = data.notes.strip()
+    user, household = await get_authenticated_household(session)
 
     from main import get_connection
 
     connection = await get_connection()
 
     try:
-        async with connection.transaction():
-            recipe = await validate_recipe(
-                connection,
-                data.recipe_id,
-                household["id"],
+        existing = await fetch_meal_by_id(
+            connection,
+            meal_id,
+            household["id"],
+        )
+
+        if not existing:
+            raise HTTPException(
+                status_code=404,
+                detail="Meal not found.",
             )
 
-            if data.recipe_id is not None and not title:
-                title = recipe["title"]
+        selected_date = (
+            payload.date
+            or payload.meal_date
+            or existing["meal_date"]
+        )
 
-            if not title:
-                raise HTTPException(
-                    status_code=400,
-                    detail="A meal title or recipe is required",
-                )
+        meal_type = (
+            payload.meal_type
+            if payload.meal_type is not None
+            else existing["meal_type"]
+        )
 
-            meal = await connection.fetchrow(
-                """
-                UPDATE meal_plan_entries
-                SET recipe_id = $1,
-                    meal_date = $2,
-                    meal_type = $3,
-                    title = $4,
-                    servings = $5,
-                    notes = $6,
-                    updated_at = NOW()
-                WHERE id = $7
-                  AND household_id = $8
-                RETURNING id, household_id, recipe_id, meal_date,
-                          meal_type, title, servings, notes,
-                          created_by, created_at, updated_at
-                """,
-                data.recipe_id,
-                data.meal_date,
-                meal_type,
-                title,
-                data.servings,
-                notes,
-                meal_id,
-                household["id"],
-            )
+        title = existing["title"]
 
-            if not meal:
-                raise HTTPException(
-                    status_code=404,
-                    detail="Meal-plan entry not found",
-                )
+        if payload.custom_name is not None:
+            title = payload.custom_name.strip()
+        elif payload.title is not None:
+            title = payload.title.strip()
 
-            return await meal_response(connection, meal)
+        recipe_id = (
+            payload.recipe_id
+            if payload.recipe_id is not None
+            else existing["recipe_id"]
+        )
+
+        servings = (
+            payload.servings
+            if payload.servings is not None
+            else existing["servings"]
+        )
+
+        notes = (
+            payload.notes
+            if payload.notes is not None
+            else existing["notes"]
+        )
+
+        await validate_recipe(
+            connection,
+            recipe_id,
+            household["id"],
+        )
+
+        await connection.execute(
+            """
+            UPDATE meal_plan_entries
+            SET
+                recipe_id = $1,
+                meal_date = $2,
+                meal_type = $3,
+                title = $4,
+                servings = $5,
+                notes = $6,
+                updated_at = NOW()
+            WHERE id = $7
+              AND household_id = $8
+            """,
+            recipe_id,
+            selected_date,
+            meal_type or "dinner",
+            title,
+            servings or 4,
+            notes or "",
+            meal_id,
+            household["id"],
+        )
     finally:
         await connection.close()
+
+    return {
+        "message": "Meal updated successfully.",
+        "id": meal_id,
+    }
 
 
 @router.delete("/{meal_id}")
 async def delete_meal(
     meal_id: int,
-    wilfordspace_session: str | None = Cookie(default=None),
+    session: str | None = Cookie(default=None),
 ):
     await ensure_meal_plan_table()
-    _, household = await get_authenticated_household(
-        wilfordspace_session
-    )
+
+    user, household = await get_authenticated_household(session)
 
     from main import get_connection
 
     connection = await get_connection()
 
     try:
-        result = await connection.execute(
+        deleted = await connection.fetchrow(
             """
             DELETE FROM meal_plan_entries
             WHERE id = $1
               AND household_id = $2
+            RETURNING id
             """,
             meal_id,
             household["id"],
         )
-
-        if result == "DELETE 0":
-            raise HTTPException(
-                status_code=404,
-                detail="Meal-plan entry not found",
-            )
-
-        return {"message": "Meal removed"}
     finally:
         await connection.close()
+
+    if not deleted:
+        raise HTTPException(
+            status_code=404,
+            detail="Meal not found.",
+        )
+
+    return {
+        "message": "Meal deleted successfully.",
+        "id": deleted["id"],
+    }
