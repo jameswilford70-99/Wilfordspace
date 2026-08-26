@@ -11,6 +11,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY main.py .
 COPY meal_planner.py .
+COPY shopping_list.py .
 
 EXPOSE 8000
 
