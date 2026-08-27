@@ -45,6 +45,8 @@ app.include_router(meal_plan_router)
 
 app.include_router(shopping_list_router)
 
+app.include_router(calendar_router)
+
 class RegisterRequest(BaseModel):
     name: str
     email: EmailStr
