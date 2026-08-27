@@ -16,6 +16,7 @@ from pydantic import BaseModel, EmailStr
 from pwdlib import PasswordHash
 from meal_planner import router as meal_plan_router
 from shopping_list import router as shopping_list_router
+from household_calendar import router as calendar_router
 
 
 DATABASE_URL = os.environ["DATABASE_URL"]
