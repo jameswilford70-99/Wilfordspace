@@ -17,7 +17,6 @@
       --accent: #ef8b2c;
       --accent-hover: #ff9f43;
       --danger: #e85d75;
-      --shadow: 0 12px 32px rgba(0, 0, 0, .25);
     }
 
     [data-theme="light"] {
@@ -31,7 +30,6 @@
       --accent: #d66f13;
       --accent-hover: #bd5d09;
       --danger: #c9405d;
-      --shadow: 0 12px 32px rgba(0, 0, 0, .1);
     }
 
     * {
@@ -55,7 +53,7 @@
     }
 
     button {
-      color: #fff;
+      color: white;
       background: var(--accent);
       border: 0;
       border-radius: 7px;
@@ -75,6 +73,16 @@
 
     button.danger {
       background: var(--danger);
+    }
+
+    button.small {
+      padding: 5px 9px;
+      font-size: 12px;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: .5;
     }
 
     input,
@@ -121,6 +129,13 @@
       display: none !important;
     }
 
+    .message {
+      min-height: 22px;
+      margin-top: 12px;
+      color: var(--accent);
+      font-size: 14px;
+    }
+
     .app {
       display: flex;
       min-height: 100vh;
@@ -142,7 +157,7 @@
       align-items: center;
       gap: 11px;
       margin: 2px 9px 31px;
-      color: #fff;
+      color: white;
       font-size: 21px;
       font-weight: 800;
     }
@@ -181,7 +196,7 @@
 
     .nav-button:hover,
     .nav-button.active {
-      color: #fff;
+      color: white;
       background: #303030;
       border-color: #3c3c3c;
     }
@@ -241,7 +256,6 @@
       background: var(--panel);
       border: 1px solid var(--border);
       border-radius: 10px;
-      box-shadow: var(--shadow);
     }
 
     .grid {
@@ -262,11 +276,9 @@
 
     .recipe-card {
       overflow: hidden;
-      padding: 0;
       background: var(--panel);
       border: 1px solid var(--border);
       border-radius: 10px;
-      cursor: pointer;
     }
 
     .recipe-card-image {
@@ -304,23 +316,8 @@
       border-radius: 12px;
     }
 
-    .message {
-      min-height: 22px;
-      margin-top: 12px;
-      color: var(--accent);
-      font-size: 14px;
-    }
-
-    .empty {
-      padding: 55px 20px;
-      color: var(--muted);
-      background: var(--panel);
-      border: 1px dashed var(--border);
-      border-radius: 10px;
-      text-align: center;
-    }
-
-    .planner-controls {
+    .planner-controls,
+    .calendar-controls {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -328,7 +325,8 @@
       margin-bottom: 20px;
     }
 
-    .planner-week {
+    .planner-week,
+    .calendar-month-title {
       color: var(--muted);
       font-weight: 700;
       text-align: center;
@@ -389,15 +387,9 @@
       margin-top: 8px;
     }
 
-    .meal-actions button {
-      padding: 3px 6px;
-      font-size: 11px;
-    }
-
     .shopping-page {
       width: min(650px, 100%);
       margin: 0 auto;
-      padding-bottom: 50px;
     }
 
     .shopping-page .page-head {
@@ -449,7 +441,6 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      width: 100%;
       min-height: 42px;
       margin-bottom: 12px;
       padding: 0 18px;
@@ -498,16 +489,16 @@
       background: #aaa;
     }
 
+    .shopping-category.collapsed .shopping-items {
+      display: none;
+    }
+
     .shopping-category-arrow {
       transition: transform .2s ease;
     }
 
     .shopping-category.collapsed .shopping-category-arrow {
       transform: rotate(-90deg);
-    }
-
-    .shopping-category.collapsed .shopping-items {
-      display: none;
     }
 
     .shopping-items {
@@ -523,7 +514,7 @@
       border-bottom: 1px solid #2c2c2c;
     }
 
-    .shopping-item input[type="checkbox"] {
+    .shopping-item input {
       width: 17px;
       height: 17px;
       accent-color: var(--accent);
@@ -534,7 +525,6 @@
       min-width: 0;
       color: #f1f1f1;
       font-size: 14px;
-      line-height: 1.35;
     }
 
     .shopping-item.purchased .shopping-item-text {
@@ -553,15 +543,16 @@
       padding: 0;
       color: #bdbdbd;
       background: transparent;
-      font-size: 16px;
+      font-size: 17px;
     }
 
-    .shopping-empty {
+    .shopping-empty,
+    .empty {
       padding: 55px 20px;
-      color: #999;
+      color: var(--muted);
       background: var(--panel);
       border: 1px dashed var(--border);
-      border-radius: 8px;
+      border-radius: 10px;
       text-align: center;
     }
 
@@ -571,6 +562,120 @@
       padding: 15px 3px;
       color: var(--muted);
       font-size: 13px;
+    }
+
+    /* Calendar */
+
+    .calendar {
+      overflow: hidden;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .calendar-weekdays,
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(110px, 1fr));
+    }
+
+    .calendar-weekdays {
+      background: var(--panel-3);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .calendar-weekday {
+      padding: 12px 10px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .calendar-grid {
+      overflow-x: auto;
+    }
+
+    .calendar-day {
+      min-height: 135px;
+      padding: 8px;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+    }
+
+    .calendar-day:hover {
+      background: var(--panel-2);
+    }
+
+    .calendar-day.other-month {
+      opacity: .4;
+    }
+
+    .calendar-day.today {
+      box-shadow: inset 0 3px 0 var(--accent);
+    }
+
+    .calendar-day-number {
+      display: inline-grid;
+      width: 27px;
+      height: 27px;
+      margin-bottom: 5px;
+      place-items: center;
+      border-radius: 50%;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .calendar-day.today .calendar-day-number {
+      color: #1e1e1e;
+      background: var(--accent);
+    }
+
+    .calendar-event {
+      display: block;
+      overflow: hidden;
+      margin: 3px 0;
+      padding: 5px 6px;
+      color: white;
+      background: var(--accent);
+      border-radius: 4px;
+      font-size: 11px;
+      line-height: 1.25;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .calendar-event.meal-event {
+      background: #397e92;
+    }
+
+    .calendar-event-time {
+      opacity: .8;
+      font-size: 10px;
+    }
+
+    .calendar-legend {
+      display: flex;
+      gap: 16px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .legend-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      margin-right: 5px;
+      background: var(--accent);
+      border-radius: 50%;
+    }
+
+    .legend-dot.meal {
+      background: #397e92;
     }
 
     .modal-backdrop {
@@ -608,16 +713,6 @@
       color: var(--muted);
       background: transparent;
       font-size: 23px;
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0 14px;
-    }
-
-    .full {
-      grid-column: 1 / -1;
     }
 
     .form-actions {
@@ -705,16 +800,9 @@
         flex-direction: row;
       }
 
-      .recipe-hero {
-        grid-template-columns: 1fr;
-      }
-
-      .form-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .full {
-        grid-column: auto;
+      .calendar-weekdays,
+      .calendar-grid {
+        min-width: 770px;
       }
     }
   </style>
@@ -763,6 +851,9 @@
 
         <label for="register-password">Password</label>
         <input id="register-password" type="password" minlength="8" required>
+
+        <label for="register-household">Household name</label>
+        <input id="register-household" value="Wilford Home" required>
 
         <div class="form-actions">
           <button type="submit">Register</button>
@@ -854,6 +945,12 @@
             <p>Keep the household shop organised.</p>
             <button data-view="shopping-view">Open shopping list</button>
           </div>
+
+          <div class="card">
+            <h3>Calendar</h3>
+            <p>Manage household events.</p>
+            <button data-view="calendar-view">Open calendar</button>
+          </div>
         </div>
       </section>
 
@@ -862,11 +959,6 @@
           <div>
             <h1>Recipes</h1>
             <p>Manage your household recipes.</p>
-          </div>
-
-          <div class="actions">
-            <button id="import-recipe-button">Import URL</button>
-            <button id="new-recipe-button">New recipe</button>
           </div>
         </div>
 
@@ -967,17 +1059,45 @@
         <div class="page-head">
           <div>
             <h1>Calendar</h1>
-            <p>Calendar integration will be added here.</p>
+            <p>Shared household calendar.</p>
           </div>
+
+          <button id="new-calendar-event">Add event</button>
         </div>
 
-        <div class="card">
-          <h2>Household calendar</h2>
-          <p>
-            Shared events and Apple Calendar and Google Calendar compatibility
-            will be added here.
-          </p>
+        <div class="calendar-controls">
+          <button id="previous-month" class="secondary">← Previous</button>
+          <div id="calendar-month-title" class="calendar-month-title"></div>
+          <button id="next-month" class="secondary">Next →</button>
         </div>
+
+        <div class="calendar">
+          <div class="calendar-weekdays">
+            <div class="calendar-weekday">Sun</div>
+            <div class="calendar-weekday">Mon</div>
+            <div class="calendar-weekday">Tue</div>
+            <div class="calendar-weekday">Wed</div>
+            <div class="calendar-weekday">Thu</div>
+            <div class="calendar-weekday">Fri</div>
+            <div class="calendar-weekday">Sat</div>
+          </div>
+
+          <div id="calendar-grid" class="calendar-grid"></div>
+        </div>
+
+        <div class="calendar-legend">
+          <span>
+            <span class="legend-dot"></span>
+            Household event
+          </span>
+
+          <span>
+            <span class="legend-dot meal"></span>
+            Planned meal
+          </span>
+        </div>
+
+        <div id="calendar-message" class="message"></div>
       </section>
     </main>
   </div>
@@ -1029,12 +1149,78 @@
     </div>
   </div>
 
+  <div id="calendar-event-modal" class="modal-backdrop hidden">
+    <div class="modal">
+      <div class="modal-head">
+        <h2 id="calendar-event-modal-title">Add event</h2>
+        <button class="close" data-close="calendar-event-modal">×</button>
+      </div>
+
+      <form id="calendar-event-form">
+        <input id="calendar-event-id" type="hidden">
+
+        <label for="calendar-event-title">Title</label>
+        <input id="calendar-event-title" maxlength="250" required>
+
+        <label for="calendar-event-date">Date</label>
+        <input id="calendar-event-date" type="date" required>
+
+        <label>
+          <input id="calendar-event-all-day" type="checkbox" style="width:auto">
+          All-day event
+        </label>
+
+        <div id="calendar-time-fields">
+          <label for="calendar-event-start">Start time</label>
+          <input id="calendar-event-start" type="time">
+
+          <label for="calendar-event-end">End time</label>
+          <input id="calendar-event-end" type="time">
+        </div>
+
+        <label for="calendar-event-location">Location</label>
+        <input id="calendar-event-location">
+
+        <label for="calendar-event-category">Category</label>
+        <select id="calendar-event-category">
+          <option value="Other">Other</option>
+          <option value="Family">Family</option>
+          <option value="School">School</option>
+          <option value="Work">Work</option>
+          <option value="Appointment">Appointment</option>
+          <option value="Holiday">Holiday</option>
+        </select>
+
+        <label for="calendar-event-colour">Colour</label>
+        <input id="calendar-event-colour" type="color" value="#ef8b2c">
+
+        <label for="calendar-event-description">Description</label>
+        <textarea id="calendar-event-description"></textarea>
+
+        <div class="form-actions">
+          <button type="submit">Save event</button>
+          <button type="button" id="delete-calendar-event" class="danger hidden">
+            Delete
+          </button>
+          <button type="button" class="secondary" data-close="calendar-event-modal">
+            Cancel
+          </button>
+        </div>
+
+        <div id="calendar-event-message" class="message"></div>
+      </form>
+    </div>
+  </div>
+
   <script>
     const $ = id => document.getElementById(id);
 
     let currentUser = null;
     let recipes = [];
     let plannerOffset = 0;
+    let calendarOffset = 0;
+    let calendarEvents = [];
+    let calendarMeals = [];
 
     async function api(path, options = {}) {
       const response = await fetch(path, {
@@ -1078,6 +1264,40 @@
         .replaceAll("'", "&#039;");
     }
 
+    function dateKey(date) {
+      return date.toISOString().slice(0, 10);
+    }
+
+    function localDateKey(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+
+      return `${year}-${month}-${day}`;
+    }
+
+    function parseDate(value) {
+      const parts = String(value).slice(0, 10).split("-");
+
+      return new Date(
+        Number(parts[0]),
+        Number(parts[1]) - 1,
+        Number(parts[2]),
+        12
+      );
+    }
+
+    function formatDate(date) {
+      return date.toLocaleDateString(undefined, {
+        day: "numeric",
+        month: "short"
+      });
+    }
+
+    function recipeName(recipe) {
+      return recipe.title || recipe.name || "Untitled recipe";
+    }
+
     function showView(id) {
       document.querySelectorAll("main .page").forEach(page => {
         page.classList.add("hidden");
@@ -1104,6 +1324,10 @@
       if (id === "shopping-view") {
         loadShopping();
       }
+
+      if (id === "calendar-view") {
+        loadCalendar();
+      }
     }
 
     function openModal(id) {
@@ -1114,48 +1338,12 @@
       $(id).classList.add("hidden");
     }
 
-    function dateKey(date) {
-      return date.toISOString().slice(0, 10);
-    }
-
-    function mondayOfWeek(offset = 0) {
-      const date = new Date();
-      const day = date.getDay();
-      const difference = day === 0 ? -6 : 1 - day;
-
-      date.setHours(12, 0, 0, 0);
-      date.setDate(date.getDate() + difference + offset * 7);
-
-      return date;
-    }
-
-    function formatDate(date) {
-      return date.toLocaleDateString(undefined, {
-        day: "numeric",
-        month: "short"
-      });
-    }
-
-    function recipeName(recipe) {
-      return recipe.title || recipe.name || "Untitled recipe";
-    }
-
-    function ingredientText(item) {
-      if (typeof item === "string") {
-        return item;
-      }
-
-      return [
-        item.quantity,
-        item.unit,
-        item.name || item.ingredient
-      ].filter(Boolean).join(" ");
-    }
-
     async function checkSession() {
       try {
         const data = await api("/api/auth/me");
+
         currentUser = data.user || data;
+
         $("auth-screen").classList.add("hidden");
         $("app").classList.remove("hidden");
 
@@ -1180,15 +1368,16 @@
         $("dashboard-recipe-count").textContent =
           `${list.length} recipe${list.length === 1 ? "" : "s"} saved`;
       } catch {
-        $("dashboard-recipe-count").textContent =
-          "Unable to load recipes";
+        $("dashboard-recipe-count").textContent = "Unable to load recipes";
       }
     }
 
     async function loadRecipes() {
       try {
         const data = await api("/api/recipes");
+
         recipes = data.recipes || data || [];
+
         renderRecipes();
       } catch (error) {
         $("recipe-message").textContent = error.message;
@@ -1207,9 +1396,8 @@
       });
 
       if (!visible.length) {
-        $("recipe-list").innerHTML = `
-          <div class="empty">No recipes found.</div>
-        `;
+        $("recipe-list").innerHTML =
+          `<div class="empty">No recipes found.</div>`;
         return;
       }
 
@@ -1237,9 +1425,21 @@
       `).join("");
     }
 
+    function mondayOfWeek(offset = 0) {
+      const date = new Date();
+      const day = date.getDay();
+      const difference = day === 0 ? -6 : 1 - day;
+
+      date.setHours(12, 0, 0, 0);
+      date.setDate(date.getDate() + difference + offset * 7);
+
+      return date;
+    }
+
     async function loadPlanner() {
       const monday = mondayOfWeek(plannerOffset);
       const end = new Date(monday);
+
       end.setDate(end.getDate() + 6);
 
       $("planner-week").textContent =
@@ -1249,7 +1449,7 @@
 
       try {
         const data = await api(
-          `/api/meal-plan?start_date=${dateKey(monday)}&end_date=${dateKey(end)}`
+          `/api/meal-plan?start_date=${localDateKey(monday)}&end_date=${localDateKey(end)}`
         );
 
         renderPlanner(monday, data.meals || data || []);
@@ -1258,157 +1458,122 @@
       }
     }
 
-function renderPlanner(monday, meals) {
-  const today = dateKey(new Date());
+    function renderPlanner(monday, meals) {
+      const today = localDateKey(new Date());
 
-  $("planner-grid").innerHTML = Array.from(
-    { length: 7 },
-    (_, index) => {
-      const day = new Date(monday);
-      day.setDate(day.getDate() + index);
+      $("planner-grid").innerHTML = Array.from(
+        { length: 7 },
+        (_, index) => {
+          const day = new Date(monday);
 
-      const key = dateKey(day);
+          day.setDate(day.getDate() + index);
 
-      const dayMeals = meals.filter(meal => {
-        return String(
-          meal.date || meal.meal_date
-        ).slice(0, 10) === key;
+          const key = localDateKey(day);
+
+          const dayMeals = meals.filter(meal => {
+            return String(meal.date || meal.meal_date).slice(0, 10) === key;
+          });
+
+          return `
+            <div class="planner-day ${key === today ? "today" : ""}">
+              <div class="planner-day-title">
+                ${day.toLocaleDateString(undefined, {
+                  weekday: "short"
+                })}
+
+                <div class="planner-date">${formatDate(day)}</div>
+              </div>
+
+              ${dayMeals.map(meal => `
+                <div class="meal">
+                  <div class="meal-type">
+                    ${escapeHtml(meal.meal_type || "dinner")}
+                  </div>
+
+                  <strong>
+                    ${escapeHtml(
+                      meal.recipe?.title ||
+                      meal.recipe?.name ||
+                      meal.custom_name ||
+                      meal.title ||
+                      "Meal"
+                    )}
+                  </strong>
+
+                  <div class="meal-actions">
+                    <button
+                      class="small danger delete-meal"
+                      data-id="${meal.id}"
+                      data-date="${key}"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              `).join("")}
+
+              <button
+                class="small secondary add-day-meal"
+                data-date="${key}"
+                style="width:100%;margin-top:10px"
+              >
+                + Add
+              </button>
+            </div>
+          `;
+        }
+      ).join("");
+
+      document.querySelectorAll(".add-day-meal").forEach(button => {
+        button.onclick = () => openMealEditor(button.dataset.date);
       });
 
-      return `
-        <div class="planner-day ${key === today ? "today" : ""}">
-          <div class="planner-day-title">
-            ${day.toLocaleDateString(undefined, {
-              weekday: "short"
-            })}
+      document.querySelectorAll(".delete-meal").forEach(button => {
+        button.onclick = async () => {
+          if (!confirm("Delete this meal?")) {
+            return;
+          }
 
-            <div class="planner-date">
-              ${formatDate(day)}
-            </div>
-          </div>
+          const mealDate = parseDate(button.dataset.date);
 
-          ${dayMeals.map(meal => `
-            <div class="meal">
-              <div class="meal-type">
-                ${escapeHtml(meal.meal_type || "dinner")}
-              </div>
+          try {
+            await api(`/api/meal-plan/${button.dataset.id}`, {
+              method: "DELETE"
+            });
 
-              <strong>
-                ${escapeHtml(
-                  meal.recipe?.title ||
-                  meal.recipe?.name ||
-                  meal.custom_name ||
-                  meal.title ||
-                  "Meal"
-                )}
-              </strong>
+            const weekStart = new Date(mealDate);
 
-              ${
-                meal.notes
-                  ? `
-                    <div>
-                      ${escapeHtml(meal.notes)}
-                    </div>
-                  `
-                  : ""
-              }
+            weekStart.setDate(
+              weekStart.getDate() - (weekStart.getDay() === 0
+                ? 6
+                : weekStart.getDay() - 1)
+            );
 
-              <div class="meal-actions">
-                <button
-                  class="small delete-meal"
-                  data-id="${meal.id}"
-                  data-date="${key}"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          `).join("")}
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekEnd.getDate() + 6);
 
-          <button
-            class="small secondary add-day-meal"
-            data-date="${key}"
-            style="width:100%;margin-top:10px"
-          >
-            + Add
-          </button>
-        </div>
-      `;
+            await api("/api/shopping-list/generate", {
+              method: "POST",
+              body: JSON.stringify({
+                start_date: localDateKey(weekStart),
+                end_date: localDateKey(weekEnd)
+              })
+            });
+
+            await loadPlanner();
+          } catch (error) {
+            $("planner-message").textContent = error.message;
+          }
+        };
+      });
     }
-  ).join("");
-
-  document.querySelectorAll(".add-day-meal").forEach(button => {
-    button.onclick = () => {
-      openMealEditor(button.dataset.date);
-    };
-  });
-
-  document.querySelectorAll(".delete-meal").forEach(button => {
-    button.onclick = async () => {
-      const mealId = button.dataset.id;
-      const mealDate = button.dataset.date;
-
-      if (!confirm("Delete this meal?")) {
-        return;
-      }
-
-      button.disabled = true;
-      $("planner-message").textContent =
-        "Deleting meal and updating shopping list...";
-
-      try {
-        await api(`/api/meal-plan/${mealId}`, {
-          method: "DELETE"
-        });
-
-        /*
-         * Regenerate the complete Monday-to-Sunday shopping list
-         * after deleting the meal.
-         */
-        const deletedDate = new Date(`${mealDate}T12:00:00`);
-        const weekStart = new Date(deletedDate);
-
-        weekStart.setDate(
-          weekStart.getDate() - weekStart.getDay() + 1
-        );
-
-        /*
-         * JavaScript treats Sunday as day 0. The calculation above
-         * therefore moves Sunday forward to the following Monday.
-         * Correct it so Sunday belongs to the week that has just ended.
-         */
-        if (deletedDate.getDay() === 0) {
-          weekStart.setDate(weekStart.getDate() - 7);
-        }
-
-        const weekEnd = new Date(weekStart);
-        weekEnd.setDate(weekEnd.getDate() + 6);
-
-        await api("/api/shopping-list/generate", {
-          method: "POST",
-          body: JSON.stringify({
-            start_date: dateKey(weekStart),
-            end_date: dateKey(weekEnd)
-          })
-        });
-
-        $("planner-message").textContent =
-          "Meal deleted and shopping list updated.";
-
-        await loadPlanner();
-      } catch (error) {
-        button.disabled = false;
-        $("planner-message").textContent =
-          error.message || "Unable to delete meal.";
-      }
-    };
-  });
-}
 
     async function openMealEditor(date = null) {
       $("meal-form").reset();
-      $("meal-id").value = "";
-      $("meal-date").value = date || dateKey(new Date());
+
+      $("meal-date").value =
+        date || localDateKey(new Date());
+
       $("meal-servings").value = 2;
       $("meal-message").textContent = "";
 
@@ -1432,7 +1597,6 @@ function renderPlanner(monday, meals) {
       event.preventDefault();
 
       const selectedDate = $("meal-date").value;
-      const id = $("meal-id").value;
 
       const payload = {
         date: selectedDate,
@@ -1446,16 +1610,11 @@ function renderPlanner(monday, meals) {
       };
 
       try {
-        await api(id ? `/api/meal-plan/${id}` : "/api/meal-plan", {
-          method: id ? "PUT" : "POST",
+        await api("/api/meal-plan", {
+          method: "POST",
           body: JSON.stringify(payload)
         });
 
-        /*
-         * Automatically generate shopping-list ingredients for the
-         * day containing the meal. Custom meals are harmless because
-         * the generator only finds ingredients for recipe meals.
-         */
         await api("/api/shopping-list/generate", {
           method: "POST",
           body: JSON.stringify({
@@ -1488,11 +1647,8 @@ function renderPlanner(monday, meals) {
           `${remaining} item${remaining === 1 ? "" : "s"} remaining`;
 
         if (!items.length) {
-          $("shopping-list").innerHTML = `
-            <div class="shopping-empty">
-              Your shopping list is empty.
-            </div>
-          `;
+          $("shopping-list").innerHTML =
+            `<div class="shopping-empty">Your shopping list is empty.</div>`;
           return;
         }
 
@@ -1510,9 +1666,11 @@ function renderPlanner(monday, meals) {
 
         Object.keys(groups).sort().forEach(category => {
           const section = document.createElement("section");
+
           section.className = "shopping-category";
 
           const header = document.createElement("button");
+
           header.className = "shopping-category-header";
           header.innerHTML = `
             <span>${escapeHtml(category)}</span>
@@ -1524,12 +1682,14 @@ function renderPlanner(monday, meals) {
           };
 
           const itemContainer = document.createElement("div");
+
           itemContainer.className = "shopping-items";
 
           groups[category]
             .sort((a, b) => Number(a.purchased) - Number(b.purchased))
             .forEach(item => {
               const row = document.createElement("div");
+
               row.className = "shopping-item";
 
               if (item.purchased) {
@@ -1537,6 +1697,7 @@ function renderPlanner(monday, meals) {
               }
 
               const checkbox = document.createElement("input");
+
               checkbox.type = "checkbox";
               checkbox.checked = Boolean(item.purchased);
 
@@ -1556,6 +1717,7 @@ function renderPlanner(monday, meals) {
               };
 
               const text = document.createElement("div");
+
               text.className = "shopping-item-text";
               text.textContent = [
                 item.quantity,
@@ -1564,9 +1726,11 @@ function renderPlanner(monday, meals) {
               ].filter(Boolean).join(" ");
 
               const actions = document.createElement("div");
+
               actions.className = "shopping-item-actions";
 
               const remove = document.createElement("button");
+
               remove.textContent = "×";
               remove.title = "Delete item";
 
@@ -1609,9 +1773,9 @@ function renderPlanner(monday, meals) {
           method: "POST",
           body: JSON.stringify({
             name,
-            quantity: $("shopping-quantity").value.trim() || null,
+            quantity: $("shopping-quantity").value.trim(),
             category: $("shopping-category").value,
-            notes: $("shopping-notes").value.trim() || null,
+            notes: $("shopping-notes").value.trim(),
             purchased: false
           })
         });
@@ -1630,13 +1794,14 @@ function renderPlanner(monday, meals) {
       try {
         const monday = mondayOfWeek(0);
         const end = new Date(monday);
+
         end.setDate(end.getDate() + 6);
 
         await api("/api/shopping-list/generate", {
           method: "POST",
           body: JSON.stringify({
-            start_date: dateKey(monday),
-            end_date: dateKey(end)
+            start_date: localDateKey(monday),
+            end_date: localDateKey(end)
           })
         });
 
@@ -1646,7 +1811,262 @@ function renderPlanner(monday, meals) {
       }
     }
 
-    $("login-form").onsubmit = async event => {
+    function calendarMonthDate() {
+      const date = new Date();
+
+      return new Date(
+        date.getFullYear(),
+        date.getMonth() + calendarOffset,
+        1,
+        12
+      );
+    }
+
+    async function loadCalendar() {
+      const month = calendarMonthDate();
+      const start = new Date(month.getFullYear(), month.getMonth(), 1, 12);
+      const end = new Date(month.getFullYear(), month.getMonth() + 1, 0, 12);
+
+      $("calendar-month-title").textContent =
+        month.toLocaleDateString(undefined, {
+          month: "long",
+          year: "numeric"
+        });
+
+      $("calendar-grid").innerHTML = "Loading...";
+
+      try {
+        const calendarData = await api(
+          `/api/calendar/events?start_date=${localDateKey(start)}&end_date=${localDateKey(end)}`
+        );
+
+        const mealsData = await api(
+          `/api/meal-plan?start_date=${localDateKey(start)}&end_date=${localDateKey(end)}`
+        );
+
+        calendarEvents = calendarData.events || [];
+        calendarMeals = mealsData.meals || [];
+
+        renderCalendar(month);
+      } catch (error) {
+        $("calendar-message").textContent = error.message;
+      }
+    }
+
+    function renderCalendar(month) {
+      const firstDay = new Date(
+        month.getFullYear(),
+        month.getMonth(),
+        1,
+        12
+      );
+
+      const lastDay = new Date(
+        month.getFullYear(),
+        month.getMonth() + 1,
+        0,
+        12
+      );
+
+      const gridStart = new Date(firstDay);
+      gridStart.setDate(firstDay.getDate() - firstDay.getDay());
+
+      const gridEnd = new Date(lastDay);
+      gridEnd.setDate(lastDay.getDate() + (6 - lastDay.getDay()));
+
+      const today = localDateKey(new Date());
+      const cells = [];
+
+      for (
+        const day = new Date(gridStart);
+        day <= gridEnd;
+        day.setDate(day.getDate() + 1)
+      ) {
+        const key = localDateKey(day);
+        const inMonth = day.getMonth() === month.getMonth();
+
+        const events = calendarEvents.filter(event => {
+          return String(event.event_date).slice(0, 10) === key;
+        });
+
+        const meals = calendarMeals.filter(meal => {
+          return String(meal.date || meal.meal_date).slice(0, 10) === key;
+        });
+
+        cells.push(`
+          <div
+            class="calendar-day ${inMonth ? "" : "other-month"} ${key === today ? "today" : ""}"
+            data-date="${key}"
+          >
+            <div class="calendar-day-number">${day.getDate()}</div>
+
+            ${events.map(event => `
+              <div
+                class="calendar-event"
+                data-event-id="${event.id}"
+                style="background:${escapeHtml(event.colour || "#ef8b2c")}"
+                title="${escapeHtml(event.description || event.title)}"
+              >
+                ${
+                  event.all_day
+                    ? ""
+                    : `<span class="calendar-event-time">${escapeHtml(event.start_time || "")}</span> `
+                }
+                ${escapeHtml(event.title)}
+              </div>
+            `).join("")}
+
+            ${meals.map(meal => `
+              <div class="calendar-event meal-event">
+                Meal:
+                ${escapeHtml(
+                  meal.recipe?.title ||
+                  meal.recipe?.name ||
+                  meal.custom_name ||
+                  meal.title ||
+                  "Meal"
+                )}
+              </div>
+            `).join("")}
+          </div>
+        `);
+      }
+
+      $("calendar-grid").innerHTML = cells.join("");
+
+      document.querySelectorAll(".calendar-day").forEach(day => {
+        day.onclick = event => {
+          if (event.target.closest(".calendar-event[data-event-id]")) {
+            return;
+          }
+
+          openCalendarEventEditor(null, day.dataset.date);
+        };
+      });
+
+      document.querySelectorAll(".calendar-event[data-event-id]").forEach(item => {
+        item.onclick = event => {
+          event.stopPropagation();
+
+          const selected = calendarEvents.find(event => {
+            return String(event.id) === String(item.dataset.eventId);
+          });
+
+          openCalendarEventEditor(selected);
+        };
+      });
+    }
+
+    function openCalendarEventEditor(event = null, selectedDate = null) {
+      $("calendar-event-form").reset();
+
+      $("calendar-event-id").value = event?.id || "";
+      $("calendar-event-title").value = event?.title || "";
+      $("calendar-event-date").value =
+        event?.event_date?.slice(0, 10) ||
+        selectedDate ||
+        localDateKey(new Date());
+
+      $("calendar-event-description").value =
+        event?.description || "";
+
+      $("calendar-event-start").value =
+        event?.start_time || "";
+
+      $("calendar-event-end").value =
+        event?.end_time || "";
+
+      $("calendar-event-location").value =
+        event?.location || "";
+
+      $("calendar-event-category").value =
+        event?.category || "Other";
+
+      $("calendar-event-colour").value =
+        event?.colour || "#ef8b2c";
+
+      $("calendar-event-all-day").checked =
+        Boolean(event?.all_day);
+
+      $("calendar-event-modal-title").textContent =
+        event ? "Edit event" : "Add event";
+
+      $("delete-calendar-event").classList.toggle(
+        "hidden",
+        !event
+      );
+
+      $("calendar-event-message").textContent = "";
+      toggleCalendarTimes();
+      openModal("calendar-event-modal");
+    }
+
+    function toggleCalendarTimes() {
+      $("calendar-time-fields").classList.toggle(
+        "hidden",
+        $("calendar-event-all-day").checked
+      );
+    }
+
+    async function saveCalendarEvent(event) {
+      event.preventDefault();
+
+      const id = $("calendar-event-id").value;
+
+      const payload = {
+        title: $("calendar-event-title").value.trim(),
+        description: $("calendar-event-description").value.trim(),
+        event_date: $("calendar-event-date").value,
+        start_time: $("calendar-event-all-day").checked
+          ? null
+          : $("calendar-event-start").value || null,
+        end_time: $("calendar-event-all-day").checked
+          ? null
+          : $("calendar-event-end").value || null,
+        all_day: $("calendar-event-all-day").checked,
+        location: $("calendar-event-location").value.trim(),
+        category: $("calendar-event-category").value,
+        colour: $("calendar-event-colour").value
+      };
+
+      try {
+        await api(
+          id
+            ? `/api/calendar/events/${id}`
+            : "/api/calendar/events",
+          {
+            method: id ? "PUT" : "POST",
+            body: JSON.stringify(payload)
+          }
+        );
+
+        closeModal("calendar-event-modal");
+        await loadCalendar();
+      } catch (error) {
+        $("calendar-event-message").textContent = error.message;
+      }
+    }
+
+    async function deleteCalendarEvent() {
+      const id = $("calendar-event-id").value;
+
+      if (!id || !confirm("Delete this calendar event?")) {
+        return;
+      }
+
+      try {
+        await api(`/api/calendar/events/${id}`, {
+          method: "DELETE"
+        });
+
+        closeModal("calendar-event-modal");
+        await loadCalendar();
+      } catch (error) {
+        $("calendar-event-message").textContent = error.message;
+      }
+    }
+
+    async function login(event) {
       event.preventDefault();
 
       try {
@@ -1658,13 +2078,13 @@ function renderPlanner(monday, meals) {
           })
         });
 
-        checkSession();
+        await checkSession();
       } catch (error) {
         $("login-message").textContent = error.message;
       }
-    };
+    }
 
-    $("register-form").onsubmit = async event => {
+    async function register(event) {
       event.preventDefault();
 
       try {
@@ -1673,15 +2093,21 @@ function renderPlanner(monday, meals) {
           body: JSON.stringify({
             name: $("register-name").value.trim(),
             email: $("register-email").value.trim(),
-            password: $("register-password").value
+            password: $("register-password").value,
+            household_name: $("register-household").value.trim()
           })
         });
 
-        checkSession();
+        await checkSession();
       } catch (error) {
         $("register-message").textContent = error.message;
       }
-    };
+    }
+
+    $("login-form").onsubmit = login;
+    $("register-form").onsubmit = register;
+    $("meal-form").onsubmit = saveMeal;
+    $("calendar-event-form").onsubmit = saveCalendarEvent;
 
     $("show-register").onclick = () => {
       $("login-form").classList.add("hidden");
@@ -1698,7 +2124,9 @@ function renderPlanner(monday, meals) {
         method: "POST"
       });
 
-      checkSession();
+      currentUser = null;
+      $("app").classList.add("hidden");
+      $("auth-screen").classList.remove("hidden");
     };
 
     $("theme-button").onclick = () => {
@@ -1710,6 +2138,7 @@ function renderPlanner(monday, meals) {
     };
 
     $("recipe-search").oninput = renderRecipes;
+
     $("previous-week").onclick = () => {
       plannerOffset--;
       loadPlanner();
@@ -1721,34 +2150,55 @@ function renderPlanner(monday, meals) {
     };
 
     $("new-meal-button").onclick = () => openMealEditor();
-    $("meal-form").onsubmit = saveMeal;
 
-    $("add-shopping").onclick = openShoppingForm;
-    $("shopping-add-bar").onclick = openShoppingForm;
-    $("cancel-shopping").onclick = closeShoppingForm;
-    $("save-shopping").onclick = saveShoppingItem;
-    $("generate-shopping").onclick = generateShoppingList;
-
-    document.querySelectorAll("[data-close]").forEach(button => {
-      button.onclick = () => closeModal(button.dataset.close);
-    });
-
-    document.querySelectorAll("[data-view]").forEach(button => {
-      button.onclick = () => showView(button.dataset.view);
-    });
-
-    function openShoppingForm() {
+    $("add-shopping").onclick = () => {
       $("shopping-form").classList.remove("hidden");
       $("shopping-name").focus();
-    }
+    };
 
-    function closeShoppingForm() {
+    $("shopping-add-bar").onclick = () => {
+      $("shopping-form").classList.remove("hidden");
+      $("shopping-name").focus();
+    };
+
+    $("cancel-shopping").onclick = () => {
       $("shopping-form").classList.add("hidden");
       $("shopping-name").value = "";
       $("shopping-quantity").value = "";
-      $("shopping-category").value = "Other";
       $("shopping-notes").value = "";
-    }
+    };
+
+    $("save-shopping").onclick = saveShoppingItem;
+    $("generate-shopping").onclick = generateShoppingList;
+
+    $("previous-month").onclick = () => {
+      calendarOffset--;
+      loadCalendar();
+    };
+
+    $("next-month").onclick = () => {
+      calendarOffset++;
+      loadCalendar();
+    };
+
+    $("new-calendar-event").onclick = () => {
+      openCalendarEventEditor();
+    };
+
+    $("delete-calendar-event").onclick = deleteCalendarEvent;
+    $("calendar-event-all-day").onchange = toggleCalendarTimes;
+
+    document.querySelectorAll("[data-close]").forEach(button => {
+      button.onclick = () => {
+        closeModal(button.dataset.close);
+      };
+    });
+
+    document.querySelectorAll("[data-view]").forEach(button => {
+      button.onclick = () => {
+        showView(button.dataset.view);
+      };
+    });
 
     document.documentElement.dataset.theme =
       localStorage.getItem("wilfordspace-theme") || "dark";
