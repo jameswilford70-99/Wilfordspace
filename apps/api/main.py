@@ -17,6 +17,7 @@ from pwdlib import PasswordHash
 from meal_planner import router as meal_plan_router
 from shopping_list import router as shopping_list_router
 from household_calendar import router as calendar_router
+from calendar_feed import router as calendar_feed_router
 
 
 DATABASE_URL = os.environ["DATABASE_URL"]
@@ -46,6 +47,8 @@ app.include_router(meal_plan_router)
 app.include_router(shopping_list_router)
 
 app.include_router(calendar_router)
+
+app.include_router(calendar_feed_router)
 
 class RegisterRequest(BaseModel):
     name: str
