@@ -2,7 +2,7 @@ import hmac
 import os
 from datetime import date, datetime, time, timedelta, timezone
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Cookie, HTTPException
 from fastapi.responses import Response
 
 
@@ -31,9 +31,6 @@ def fold_ics_line(
     line: str,
     maximum_length: int = 74,
 ) -> list[str]:
-    """
-    Fold long iCalendar lines according to RFC 5545.
-    """
     if len(line) <= maximum_length:
         return [line]
 
@@ -131,12 +128,10 @@ def add_ical_event(
             event_date.strftime("%Y%m%d"),
         )
 
-        next_day = event_date + timedelta(days=1)
-
         add_ics_line(
             lines,
             "DTEND;VALUE=DATE",
-            next_day.strftime("%Y%m%d"),
+            (event_date + timedelta(days=1)).strftime("%Y%m%d"),
         )
     else:
         start_datetime = combine_as_utc(
@@ -222,16 +217,6 @@ def build_icalendar(
 
         all_day = bool(event["all_day"])
 
-        start_time = None
-
-        if not all_day:
-            start_time = parse_time(event["start_time"])
-
-        end_time = None
-
-        if not all_day:
-            end_time = parse_time(event["end_time"])
-
         add_ical_event(
             lines,
             uid=(
@@ -242,8 +227,16 @@ def build_icalendar(
             description=event["description"] or "",
             location=event["location"] or "",
             event_date=event_date,
-            start_time=start_time,
-            end_time=end_time,
+            start_time=(
+                None
+                if all_day
+                else parse_time(event["start_time"])
+            ),
+            end_time=(
+                None
+                if all_day
+                else parse_time(event["end_time"])
+            ),
             all_day=all_day,
         )
 
@@ -253,12 +246,9 @@ def build_icalendar(
         if meal_date is None:
             continue
 
-        recipe_title = meal["recipe_title"] or ""
-        custom_title = meal["title"] or ""
-
         meal_title = (
-            recipe_title
-            or custom_title
+            meal["recipe_title"]
+            or meal["title"]
             or "Planned meal"
         )
 
@@ -294,6 +284,46 @@ def build_icalendar(
     add_ics_line(lines, "END", "VCALENDAR")
 
     return "\r\n".join(lines) + "\r\n"
+
+
+@router.get("/feed-info")
+async def calendar_feed_info(
+    wilfordspace_session: str | None = Cookie(default=None),
+):
+    """
+    Return the private feed URL to an authenticated household member.
+    The token is never stored in the frontend source code.
+    """
+
+    from main import get_current_user
+
+    if not wilfordspace_session:
+        raise HTTPException(
+            status_code=401,
+            detail="Authentication required",
+        )
+
+    await get_current_user(wilfordspace_session)
+
+    configured_token = os.getenv("CALENDAR_FEED_TOKEN")
+
+    if not configured_token:
+        raise HTTPException(
+            status_code=503,
+            detail="Calendar feed is not configured.",
+        )
+
+    public_url = os.getenv(
+        "WILFORDSPACE_PUBLIC_URL",
+        "https://wilfordspace.wilfordhome.uk",
+    ).rstrip("/")
+
+    return {
+        "feed_url": (
+            f"{public_url}/api/calendar/feed/"
+            f"{configured_token}.ics"
+        )
+    }
 
 
 @router.get("/feed/{feed_token}.ics")
