@@ -141,11 +141,17 @@ async def list_household_members(
     finally:
         await connection.close()
 
+    can_manage = (
+        household["role"] == "owner"
+        or household["owner_id"] == user["id"]
+    )
+
     return {
         "household": {
             "id": household["id"],
             "name": household["name"],
             "owner_id": household["owner_id"],
+            "can_manage": can_manage,
         },
         "members": [
             {
@@ -228,6 +234,29 @@ async def add_household_member(
                 detail=(
                     "That user is already a member of this "
                     "household."
+                ),
+            )
+
+        existing_household = await connection.fetchrow(
+            """
+            SELECT
+                h.id,
+                h.name
+            FROM household_members hm
+            JOIN households h
+                ON h.id = hm.household_id
+            WHERE hm.user_id = $1
+            LIMIT 1
+            """,
+            invited_user["id"],
+        )
+
+        if existing_household:
+            raise HTTPException(
+                status_code=409,
+                detail=(
+                    "That user already belongs to a household "
+                    f"({existing_household['name']})."
                 ),
             )
 
