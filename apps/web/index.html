@@ -1,33 +1,35 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>WilfordSpace</title>
 
   <style>
     :root {
-      --bg: #f7f8fa;
-      --surface: #ffffff;
-      --text: #172033;
-      --muted: #64748b;
-      --primary: #2a9d8f;
-      --primary-dark: #238579;
-      --danger: #c0392b;
-      --border: #dfe6ee;
-      --shadow: 0 12px 35px rgba(23, 32, 51, .08);
+      --bg: #171717;
+      --panel: #222;
+      --panel-2: #292929;
+      --panel-3: #303030;
+      --border: #3b3b3b;
+      --text: #f4f4f4;
+      --muted: #a6a6a6;
+      --accent: #ef8b2c;
+      --accent-hover: #ff9f43;
+      --danger: #e85d75;
     }
 
-    [data-theme="dark"] {
-      --bg: #111827;
-      --surface: #1b263b;
-      --text: #f3f4f6;
-      --muted: #a8b3c5;
-      --primary: #43b8a8;
-      --primary-dark: #329d91;
-      --danger: #ff8d82;
-      --border: #334155;
-      --shadow: 0 12px 35px rgba(0, 0, 0, .25);
+    [data-theme="light"] {
+      --bg: #f3f3f3;
+      --panel: #fff;
+      --panel-2: #fafafa;
+      --panel-3: #eee;
+      --border: #ddd;
+      --text: #202020;
+      --muted: #707070;
+      --accent: #d66f13;
+      --accent-hover: #bd5d09;
+      --danger: #c9405d;
     }
 
     * {
@@ -35,88 +37,37 @@
     }
 
     body {
-      margin: 0;
       min-height: 100vh;
-      background: var(--bg);
+      margin: 0;
       color: var(--text);
-      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
     }
 
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 18px 6%;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 24px;
-      font-weight: 700;
-    }
-
-    .brand-mark {
-      display: grid;
-      place-items: center;
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      background: var(--primary);
-      color: white;
-      font-size: 21px;
-    }
-
-    .accent {
-      color: var(--primary);
-    }
-
-    main {
-      width: min(1180px, 90%);
-      margin: auto;
-      padding: 45px 0;
-    }
-
-    h1 {
-      margin: 0 0 14px;
-      font-size: clamp(36px, 5vw, 58px);
-      letter-spacing: -2px;
-    }
-
-    h2 {
-      margin-top: 0;
-    }
-
-    h3 {
-      margin-top: 0;
-    }
-
-    p {
-      color: var(--muted);
-      line-height: 1.6;
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
     }
 
     button {
-      border: 0;
-      border-radius: 8px;
-      padding: 11px 16px;
-      background: var(--primary);
       color: white;
-      font-size: 14px;
-      font-weight: 600;
+      background: var(--accent);
+      border: 0;
+      border-radius: 7px;
+      padding: 10px 15px;
       cursor: pointer;
     }
 
     button:hover {
-      background: var(--primary-dark);
+      background: var(--accent-hover);
     }
 
     button.secondary {
-      background: transparent;
       color: var(--text);
+      background: var(--panel-3);
       border: 1px solid var(--border);
     }
 
@@ -124,861 +75,2137 @@
       background: var(--danger);
     }
 
-    .actions,
-    .tabs,
-    .toolbar {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
+    button.small {
+      padding: 5px 9px;
+      font-size: 12px;
     }
 
-    .card,
-    .feature-card,
-    .recipe-card {
-      background: var(--surface);
+    button:disabled {
+      cursor: not-allowed;
+      opacity: .5;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      color: var(--text);
+      background: var(--panel-2);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      box-shadow: var(--shadow);
+      border-radius: 7px;
+      padding: 10px 12px;
+      outline: none;
     }
 
-    .card {
-      padding: 28px;
-    }
-
-    .auth-layout {
-      display: grid;
-      grid-template-columns: 1.15fr .85fr;
-      gap: 55px;
-      align-items: center;
-    }
-
-    .tabs {
-      margin-bottom: 22px;
-    }
-
-    .tabs button {
-      flex: 1;
+    textarea {
+      min-height: 100px;
+      resize: vertical;
     }
 
     label {
       display: block;
-      margin: 15px 0 6px;
-      font-size: 14px;
-      font-weight: 600;
+      margin: 14px 0 6px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
     }
 
-    input,
-    textarea {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      background: var(--bg);
-      color: var(--text);
-      font: inherit;
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
     }
 
-    textarea {
-      min-height: 110px;
-      resize: vertical;
+    h1 {
+      font-size: 28px;
     }
 
-    input:focus,
-    textarea:focus {
-      outline: 2px solid var(--primary);
-      border-color: var(--primary);
-    }
-
-    form button[type="submit"] {
-      width: 100%;
-      margin-top: 20px;
-    }
-
-    .message {
-      min-height: 22px;
-      margin-top: 14px;
-      color: var(--danger);
-      font-size: 14px;
-    }
-
-    .status {
-      display: inline-block;
-      margin-top: 15px;
-      padding: 9px 13px;
-      border-radius: 999px;
-      background: rgba(42, 157, 143, .14);
-      color: var(--primary);
-      font-weight: 600;
+    h2 {
+      font-size: 21px;
     }
 
     .hidden {
       display: none !important;
     }
 
-    .page-header {
+    .message {
+      min-height: 22px;
+      margin-top: 12px;
+      color: var(--accent);
+      font-size: 14px;
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: fixed;
+      inset: 0 auto 0 0;
+      width: 245px;
+      display: flex;
+      flex-direction: column;
+      padding: 22px 15px;
+      background: #1e1e1e;
+      border-right: 1px solid #353535;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      margin: 2px 9px 31px;
+      color: white;
+      font-size: 21px;
+      font-weight: 800;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 33px;
+      height: 33px;
+      place-items: center;
+      color: #1e1e1e;
+      background: var(--accent);
+      border-radius: 10px;
+    }
+
+    .nav-title {
+      margin: 0 9px 8px;
+      color: #777;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+    }
+
+    .nav-button {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      gap: 12px;
+      margin-bottom: 4px;
+      padding: 11px 12px;
+      color: #bdbdbd;
+      background: transparent;
+      border: 1px solid transparent;
+      text-align: left;
+    }
+
+    .nav-button:hover,
+    .nav-button.active {
+      color: white;
+      background: #303030;
+      border-color: #3c3c3c;
+    }
+
+    .nav-icon {
+      width: 22px;
+      color: var(--accent);
+      text-align: center;
+    }
+
+    .sidebar-bottom {
+      margin-top: auto;
+    }
+
+    .user-box {
+      margin: 14px 7px 10px;
+      padding: 12px;
+      color: #aaa;
+      background: #292929;
+      border: 1px solid #383838;
+      border-radius: 8px;
+      font-size: 12px;
+    }
+
+    .main {
+      width: calc(100% - 245px);
+      margin-left: 245px;
+      padding: 30px 38px 60px;
+    }
+
+    .page {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+    }
+
+    .page-head {
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
       gap: 20px;
-      margin-bottom: 28px;
+      margin-bottom: 25px;
     }
 
-    .feature-grid,
-    .recipe-grid {
+    .page-head p {
+      color: var(--muted);
+      margin-bottom: 0;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .card {
+      padding: 20px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(auto-fill, minmax(245px, 1fr));
       gap: 18px;
     }
 
-    .feature-card,
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .toolbar input {
+      max-width: 410px;
+    }
+
     .recipe-card {
-      padding: 23px;
+      overflow: hidden;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
     }
 
-    .feature-card {
-      cursor: pointer;
+    .recipe-card-image {
+      width: 100%;
+      height: 155px;
+      object-fit: cover;
+      background: var(--panel-3);
     }
 
-    .feature-card:hover,
-    .recipe-card:hover {
-      border-color: var(--primary);
-    }
-
-    .icon {
-      font-size: 28px;
+    .recipe-card-content {
+      padding: 15px;
     }
 
     .recipe-card h3 {
-      color: var(--primary);
+      margin-bottom: 7px;
+    }
+
+    .recipe-card p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .pill {
+      padding: 4px 8px;
+      background: var(--panel-3);
+      border-radius: 12px;
+    }
+
+    .planner-controls,
+    .calendar-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .planner-week,
+    .calendar-month-title {
+      color: var(--muted);
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .planner-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(125px, 1fr));
+      gap: 8px;
+      overflow-x: auto;
+    }
+
+    .planner-day {
+      min-height: 220px;
+      padding: 10px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .planner-day.today {
+      border-color: var(--accent);
+    }
+
+    .planner-day-title {
+      padding-bottom: 9px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .planner-date {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 400;
+    }
+
+    .meal {
+      margin-top: 9px;
+      padding: 9px;
+      background: var(--panel-2);
+      border-left: 3px solid var(--accent);
+      border-radius: 5px;
+      font-size: 12px;
+    }
+
+    .meal-type {
+      margin-bottom: 4px;
+      color: var(--accent);
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .meal-actions {
+      display: flex;
+      gap: 4px;
+      margin-top: 8px;
+    }
+
+    .shopping-page {
+      width: min(650px, 100%);
+      margin: 0 auto;
+    }
+
+    .shopping-page .page-head {
+      position: relative;
+      min-height: 90px;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .shopping-page .page-head > div:first-child {
+      text-align: center;
+    }
+
+    .shopping-page .page-head h1 {
+      margin-bottom: 6px;
+      font-size: 24px;
+    }
+
+    .shopping-page .page-head p {
+      display: none;
+    }
+
+    .shopping-page .page-head .actions {
+      position: absolute;
+      top: 24px;
+      right: 0;
+    }
+
+    .shopping-page .page-head .actions button {
+      width: 42px;
+      height: 42px;
+      padding: 0;
+      border-radius: 50%;
+      font-size: 0;
+    }
+
+    .shopping-page .page-head .actions button:first-child::after {
+      content: "↻";
+      font-size: 21px;
+    }
+
+    .shopping-page .page-head .actions button:last-child::after {
+      content: "+";
+      font-size: 25px;
+    }
+
+    .shopping-add-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 42px;
+      margin-bottom: 12px;
+      padding: 0 18px;
+      color: #bdbdbd;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 22px;
       cursor: pointer;
     }
 
-    .recipe-card h3:hover {
-      text-decoration: underline;
+    .shopping-add-icon {
+      color: var(--accent);
     }
 
-    .recipe-meta {
+    .shopping-form-card {
+      margin-bottom: 18px;
+      padding: 20px;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .shopping-category {
+      margin-bottom: 10px;
+      background: #202020;
+      border: 1px solid #2c2c2c;
+    }
+
+    .shopping-category-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      min-height: 42px;
+      padding: 0 15px;
+      color: white;
+      background: #999;
+      border: 0;
+      border-radius: 0;
+      font-size: 14px;
+      font-weight: 800;
+      text-align: left;
+    }
+
+    .shopping-category-header:hover {
+      background: #aaa;
+    }
+
+    .shopping-category.collapsed .shopping-items {
+      display: none;
+    }
+
+    .shopping-category-arrow {
+      transition: transform .2s ease;
+    }
+
+    .shopping-category.collapsed .shopping-category-arrow {
+      transform: rotate(-90deg);
+    }
+
+    .shopping-items {
+      background: #202020;
+    }
+
+    .shopping-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 52px;
+      padding: 0 13px;
+      border-bottom: 1px solid #2c2c2c;
+    }
+
+    .shopping-item input {
+      width: 17px;
+      height: 17px;
+      accent-color: var(--accent);
+    }
+
+    .shopping-item-text {
+      flex: 1;
+      min-width: 0;
+      color: #f1f1f1;
+      font-size: 14px;
+    }
+
+    .shopping-item.purchased .shopping-item-text {
+      color: #777;
+      text-decoration: line-through;
+    }
+
+    .shopping-item-actions {
+      display: flex;
+      gap: 3px;
+    }
+
+    .shopping-item-actions button {
+      width: 30px;
+      height: 30px;
+      padding: 0;
+      color: #bdbdbd;
+      background: transparent;
+      font-size: 17px;
+    }
+
+    .shopping-empty,
+    .empty {
+      padding: 55px 20px;
+      color: var(--muted);
+      background: var(--panel);
+      border: 1px dashed var(--border);
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .shopping-footer {
+      display: flex;
+      justify-content: space-between;
+      padding: 15px 3px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* Calendar */
+
+    .calendar {
+      overflow: hidden;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .calendar-weekdays,
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(110px, 1fr));
+    }
+
+    .calendar-weekdays {
+      background: var(--panel-3);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .calendar-weekday {
+      padding: 12px 10px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .calendar-grid {
+      overflow-x: auto;
+    }
+
+    .calendar-day {
+      min-height: 135px;
+      padding: 8px;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+    }
+
+    .calendar-day:hover {
+      background: var(--panel-2);
+    }
+
+    .calendar-day.other-month {
+      opacity: .4;
+    }
+
+    .calendar-day.today {
+      box-shadow: inset 0 3px 0 var(--accent);
+    }
+
+    .calendar-day-number {
+      display: inline-grid;
+      width: 27px;
+      height: 27px;
+      margin-bottom: 5px;
+      place-items: center;
+      border-radius: 50%;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .calendar-day.today .calendar-day-number {
+      color: #1e1e1e;
+      background: var(--accent);
+    }
+
+    .calendar-event {
+      display: block;
+      overflow: hidden;
+      margin: 3px 0;
+      padding: 5px 6px;
+      color: white;
+      background: var(--accent);
+      border-radius: 4px;
+      font-size: 11px;
+      line-height: 1.25;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .calendar-event.meal-event {
+      background: #397e92;
+    }
+
+    .calendar-event-time {
+      opacity: .8;
+      font-size: 10px;
+    }
+
+    .calendar-legend {
+      display: flex;
+      gap: 16px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .legend-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      margin-right: 5px;
+      background: var(--accent);
+      border-radius: 50%;
+    }
+
+    .legend-dot.meal {
+      background: #397e92;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      z-index: 30;
+      inset: 0;
+      display: grid;
+      padding: 25px;
+      background: rgba(0, 0, 0, .72);
+      place-items: center;
+    }
+
+    .modal {
+      width: min(700px, 100%);
+      max-height: calc(100vh - 50px);
+      overflow: auto;
+      padding: 23px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 11px;
+    }
+
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-head h2 {
+      margin: 0;
+    }
+
+    .close {
+      padding: 2px 8px;
+      color: var(--muted);
+      background: transparent;
+      font-size: 23px;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .auth-screen {
+      display: grid;
+      min-height: 100vh;
+      padding: 20px;
+      place-items: center;
+      background: var(--bg);
+    }
+
+    .auth-card {
+      width: min(430px, 100%);
+      padding: 31px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    .auth-brand {
+      margin-bottom: 25px;
+      text-align: center;
+    }
+
+    .auth-brand .brand {
+      display: inline-flex;
+      margin: 0 0 12px;
+    }
+
+    .auth-brand p {
       color: var(--muted);
       font-size: 14px;
     }
 
-    .toolbar input {
-      max-width: 420px;
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-    }
-
-    .empty-state {
-      grid-column: 1 / -1;
-      padding: 35px;
-      text-align: center;
+    .auth-switch {
+      margin-top: 18px;
       color: var(--muted);
-      border: 1px dashed var(--border);
-      border-radius: 14px;
+      font-size: 13px;
+      text-align: center;
     }
 
-    .detail-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 25px;
+    .auth-switch button {
+      padding: 0;
+      color: var(--accent);
+      background: transparent;
+      font-size: 13px;
     }
 
-    .detail-grid li {
-      margin-bottom: 8px;
-      line-height: 1.5;
-    }
-
-    @media (max-width: 850px) {
-      .auth-layout,
-      .detail-grid {
-        grid-template-columns: 1fr;
+    @media (max-width: 700px) {
+      .sidebar {
+        position: static;
+        width: 100%;
+        min-height: auto;
       }
 
-      .feature-grid,
-      .recipe-grid {
-        grid-template-columns: repeat(2, 1fr);
+      .app {
+        display: block;
       }
-    }
 
-    @media (max-width: 560px) {
-      .page-header,
-      .toolbar {
+      .main {
+        width: 100%;
+        margin-left: 0;
+        padding: 22px 15px 45px;
+      }
+
+      .user-box {
+        display: none;
+      }
+
+      .nav-button {
+        display: inline-flex;
+        width: auto;
+      }
+
+      .page-head {
         flex-direction: column;
       }
 
-      .feature-grid,
-      .recipe-grid,
-      .form-grid {
-        grid-template-columns: 1fr;
+      .shopping-page .page-head {
+        flex-direction: row;
+      }
+
+      .calendar-weekdays,
+      .calendar-grid {
+        min-width: 770px;
       }
     }
   </style>
 </head>
 
 <body>
-  <header>
-    <div class="brand">
-      <div class="brand-mark">⌂</div>
-      <span>Wilford<span class="accent">Space</span></span>
-    </div>
-
-    <div class="actions">
-      <button id="theme-button" class="secondary">Toggle theme</button>
-      <button id="logout-button" class="danger hidden">Log out</button>
-    </div>
-  </header>
-
-  <main>
-    <section id="auth-view" class="auth-layout">
-      <div>
-        <h1>Your household, <span class="accent">organised.</span></h1>
-        <p>
-          Recipes, weekly dinners, shopping lists and household events
-          brought together in one private space.
-        </p>
-        <div class="status">● Private household workspace</div>
+  <div id="auth-screen" class="auth-screen hidden">
+    <div class="auth-card">
+      <div class="auth-brand">
+        <div class="brand">
+          <span class="brand-mark">W</span>
+          <span>WilfordSpace</span>
+        </div>
+        <p>Recipes, planning and household organisation.</p>
       </div>
 
-      <div class="card">
-        <div class="tabs">
-          <button id="login-tab">Log in</button>
-          <button id="register-tab" class="secondary">Create account</button>
-        </div>
+      <form id="login-form">
+        <h2>Welcome back</h2>
 
-        <form id="login-form">
-          <h2>Welcome back</h2>
+        <label for="login-email">Email address</label>
+        <input id="login-email" type="email" required>
 
-          <label for="login-email">Email address</label>
-          <input id="login-email" type="email" required>
+        <label for="login-password">Password</label>
+        <input id="login-password" type="password" required>
 
-          <label for="login-password">Password</label>
-          <input id="login-password" type="password" required>
-
+        <div class="form-actions">
           <button type="submit">Log in</button>
-          <div id="login-message" class="message"></div>
-        </form>
-
-        <form id="register-form" class="hidden">
-          <h2>Create your account</h2>
-
-          <label for="register-name">Your name</label>
-          <input id="register-name" required>
-
-          <label for="register-email">Email address</label>
-          <input id="register-email" type="email" required>
-
-          <label for="register-password">Password</label>
-          <input id="register-password" type="password" minlength="8" required>
-
-          <label for="household-name">Household name</label>
-          <input id="household-name" value="Wilford Household" required>
-
-          <button type="submit">Create account</button>
-          <div id="register-message" class="message"></div>
-        </form>
-      </div>
-    </section>
-
-    <section id="dashboard-view" class="hidden">
-      <div class="page-header">
-        <div>
-          <h1>Welcome, <span id="user-name" class="accent"></span></h1>
-          <p>Your private WilfordSpace household dashboard.</p>
-        </div>
-      </div>
-
-      <div class="feature-grid">
-        <article id="recipes-card" class="feature-card">
-          <div class="icon">🍲</div>
-          <h3>Recipes</h3>
-          <p>Create, search, edit and manage household recipes.</p>
-        </article>
-
-        <article class="feature-card">
-          <div class="icon">📅</div>
-          <h3>Dinner planner</h3>
-          <p>Weekly meal planning will be added next.</p>
-        </article>
-
-        <article class="feature-card">
-          <div class="icon">🛒</div>
-          <h3>Shopping list</h3>
-          <p>Shopping lists will connect to recipes and meals.</p>
-        </article>
-      </div>
-    </section>
-
-    <section id="recipes-view" class="hidden">
-      <div class="page-header">
-        <div>
-          <h1>Recipes</h1>
-          <p>Your shared household recipe collection.</p>
         </div>
 
-        <div class="actions">
-          <button id="dashboard-button" class="secondary">Dashboard</button>
-          <button id="new-recipe-button">New recipe</button>
+        <div id="login-message" class="message"></div>
+
+        <div class="auth-switch">
+          Need an account?
+          <button type="button" id="show-register">Register</button>
         </div>
-      </div>
-
-      <div class="toolbar">
-        <input id="recipe-search" type="search" placeholder="Search recipes...">
-        <button id="search-button">Search</button>
-      </div>
-
-      <div id="recipe-list" class="recipe-grid"></div>
-      <div id="recipe-list-message" class="message"></div>
-    </section>
-
-    <section id="recipe-form-view" class="hidden">
-      <div class="page-header">
-        <div>
-          <h1 id="form-title">New recipe</h1>
-          <p id="form-subtitle">Add a recipe to your household collection.</p>
-        </div>
-
-        <button id="cancel-button" class="secondary">Cancel</button>
-      </div>
-
-      <form id="recipe-form" class="card">
-        <label for="recipe-title">Recipe title</label>
-        <input id="recipe-title" required>
-
-        <label for="recipe-description">Description</label>
-        <textarea id="recipe-description"></textarea>
-
-        <div class="form-grid">
-          <div>
-            <label for="recipe-servings">Servings</label>
-            <input id="recipe-servings" type="number" min="1" value="4" required>
-          </div>
-
-          <div>
-            <label for="recipe-prep">Prep time, minutes</label>
-            <input id="recipe-prep" type="number" min="0">
-          </div>
-
-          <div>
-            <label for="recipe-cook">Cook time, minutes</label>
-            <input id="recipe-cook" type="number" min="0">
-          </div>
-        </div>
-
-        <label for="recipe-source">Source URL, optional</label>
-        <input id="recipe-source" type="url">
-
-        <label for="recipe-ingredients">
-          Ingredients, one per line
-        </label>
-        <textarea id="recipe-ingredients"
-          placeholder="400|g|pasta&#10;1|jar|tomato sauce"></textarea>
-        <p>Format: quantity|unit|name</p>
-
-        <label for="recipe-instructions">
-          Instructions, one step per line
-        </label>
-        <textarea id="recipe-instructions"
-          placeholder="Boil the pasta.&#10;Heat the sauce."></textarea>
-
-        <button type="submit">Save recipe</button>
-        <div id="form-message" class="message"></div>
       </form>
-    </section>
 
-    <section id="detail-view" class="hidden">
-      <div class="page-header">
-        <div>
-          <h1 id="detail-title"></h1>
-          <p id="detail-description"></p>
+      <form id="register-form" class="hidden">
+        <h2>Create account</h2>
+
+        <label for="register-name">Name</label>
+        <input id="register-name" required>
+
+        <label for="register-email">Email address</label>
+        <input id="register-email" type="email" required>
+
+        <label for="register-password">Password</label>
+        <input id="register-password" type="password" minlength="8" required>
+
+        <label for="register-household">Household name</label>
+        <input id="register-household" value="Wilford Home" required>
+
+        <div class="form-actions">
+          <button type="submit">Register</button>
         </div>
 
-        <div class="actions">
-          <button id="back-button" class="secondary">Back to recipes</button>
-          <button id="edit-button">Edit</button>
-          <button id="delete-button" class="danger">Delete</button>
+        <div id="register-message" class="message"></div>
+
+        <div class="auth-switch">
+          Already have an account?
+          <button type="button" id="show-login">Log in</button>
         </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="app" class="app hidden">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark">W</span>
+        <span>WilfordSpace</span>
       </div>
 
-      <div class="detail-grid">
-        <div class="card">
-          <h2>Ingredients</h2>
-          <ul id="detail-ingredients"></ul>
+      <div class="nav-title">Household</div>
+
+      <button class="nav-button active" data-view="dashboard-view">
+        <span class="nav-icon">⌂</span>
+        Dashboard
+      </button>
+
+      <button class="nav-button" data-view="recipes-view">
+        <span class="nav-icon">▣</span>
+        Recipes
+      </button>
+
+      <button class="nav-button" data-view="planner-view">
+        <span class="nav-icon">▦</span>
+        Dinner planner
+      </button>
+
+      <button class="nav-button" data-view="shopping-view">
+        <span class="nav-icon">✓</span>
+        Shopping list
+      </button>
+
+      <button class="nav-button" data-view="calendar-view">
+        <span class="nav-icon">□</span>
+        Calendar
+      </button>
+
+      <div class="sidebar-bottom">
+        <button id="theme-button" class="nav-button">
+          <span class="nav-icon">◐</span>
+          Toggle theme
+        </button>
+
+        <button id="logout-button" class="nav-button">
+          <span class="nav-icon">↪</span>
+          Log out
+        </button>
+
+        <div id="user-box" class="user-box"></div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <section id="dashboard-view" class="page">
+        <div class="page-head">
+          <div>
+            <h1>Dashboard</h1>
+            <p>Welcome to your household space.</p>
+          </div>
         </div>
 
-        <div class="card">
-          <h2>Instructions</h2>
-          <ol id="detail-instructions"></ol>
+        <div class="grid">
+          <div class="card">
+            <h3>Recipes</h3>
+            <p id="dashboard-recipe-count">Loading...</p>
+            <button data-view="recipes-view">View recipes</button>
+          </div>
+
+          <div class="card">
+            <h3>This week's planner</h3>
+            <p>Plan your household dinners.</p>
+            <button data-view="planner-view">Open planner</button>
+          </div>
+
+          <div class="card">
+            <h3>Shopping list</h3>
+            <p>Keep the household shop organised.</p>
+            <button data-view="shopping-view">Open shopping list</button>
+          </div>
+
+          <div class="card">
+            <h3>Calendar</h3>
+            <p>Manage household events.</p>
+            <button data-view="calendar-view">Open calendar</button>
+          </div>
         </div>
+      </section>
+
+      <section id="recipes-view" class="page hidden">
+        <div class="page-head">
+          <div>
+            <h1>Recipes</h1>
+            <p>Manage your household recipes.</p>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <input id="recipe-search" placeholder="Search recipes...">
+        </div>
+
+        <div id="recipe-list" class="grid"></div>
+        <div id="recipe-message" class="message"></div>
+      </section>
+
+      <section id="planner-view" class="page hidden">
+        <div class="page-head">
+          <div>
+            <h1>Dinner planner</h1>
+            <p>Plan meals for the week.</p>
+          </div>
+
+          <button id="new-meal-button">Add meal</button>
+        </div>
+
+        <div class="planner-controls">
+          <button id="previous-week" class="secondary">← Previous</button>
+          <div id="planner-week" class="planner-week"></div>
+          <button id="next-week" class="secondary">Next →</button>
+        </div>
+
+        <div id="planner-grid" class="planner-grid"></div>
+        <div id="planner-message" class="message"></div>
+      </section>
+
+      <section id="shopping-view" class="page hidden">
+        <div class="shopping-page">
+          <div class="page-head">
+            <div>
+              <h1>Weekly Shop</h1>
+              <p>Shared household shopping list.</p>
+            </div>
+
+            <div class="actions">
+              <button id="generate-shopping" title="Generate from meal plan">
+                Generate
+              </button>
+
+              <button id="add-shopping" class="secondary" title="Add item">
+                Add
+              </button>
+            </div>
+          </div>
+
+          <div id="shopping-add-bar" class="shopping-add-bar">
+            <span class="shopping-add-icon">●</span>
+            <span>Add item</span>
+          </div>
+
+          <div id="shopping-form" class="shopping-form-card hidden">
+            <h2>Add shopping item</h2>
+
+            <label for="shopping-name">Item name</label>
+            <input id="shopping-name" placeholder="For example: Milk">
+
+            <label for="shopping-quantity">Quantity</label>
+            <input id="shopping-quantity" placeholder="For example: 2 litres">
+
+            <label for="shopping-category">Category</label>
+            <select id="shopping-category">
+              <option value="Fruit & Vegetables">Fruit & Vegetables</option>
+              <option value="Meat & Poultry">Meat & Poultry</option>
+              <option value="Dairy">Dairy</option>
+              <option value="Bakery">Bakery</option>
+              <option value="Frozen">Frozen</option>
+              <option value="Cupboard">Cupboard</option>
+              <option value="Drinks">Drinks</option>
+              <option value="Other" selected>Other</option>
+            </select>
+
+            <label for="shopping-notes">Notes</label>
+            <input id="shopping-notes" placeholder="Optional note">
+
+            <div class="form-actions">
+              <button id="save-shopping">Add item</button>
+              <button id="cancel-shopping" class="secondary">Cancel</button>
+            </div>
+          </div>
+
+          <div id="shopping-list"></div>
+
+          <div class="shopping-footer">
+            <span id="shopping-count"></span>
+            <span>WilfordSpace household list</span>
+          </div>
+
+          <div id="shopping-message" class="message"></div>
+        </div>
+      </section>
+
+      <section id="calendar-view" class="page hidden">
+        <div class="page-head">
+          <div>
+            <h1>Calendar</h1>
+            <p>Shared household calendar.</p>
+          </div>
+
+          <button id="new-calendar-event">Add event</button>
+        </div>
+
+        <div class="calendar-controls">
+          <button id="previous-month" class="secondary">← Previous</button>
+          <div id="calendar-month-title" class="calendar-month-title"></div>
+          <button id="next-month" class="secondary">Next →</button>
+        </div>
+
+        <div class="calendar">
+          <div class="calendar-weekdays">
+            <div class="calendar-weekday">Sun</div>
+            <div class="calendar-weekday">Mon</div>
+            <div class="calendar-weekday">Tue</div>
+            <div class="calendar-weekday">Wed</div>
+            <div class="calendar-weekday">Thu</div>
+            <div class="calendar-weekday">Fri</div>
+            <div class="calendar-weekday">Sat</div>
+          </div>
+
+          <div id="calendar-grid" class="calendar-grid"></div>
+        </div>
+
+        <div class="calendar-legend">
+          <span>
+            <span class="legend-dot"></span>
+            Household event
+          </span>
+
+          <span>
+            <span class="legend-dot meal"></span>
+            Planned meal
+          </span>
+        </div>
+
+        <div id="calendar-message" class="message"></div>
+      </section>
+    </main>
+  </div>
+
+  <div id="meal-modal" class="modal-backdrop hidden">
+    <div class="modal">
+      <div class="modal-head">
+        <h2>Add meal</h2>
+        <button class="close" data-close="meal-modal">×</button>
       </div>
 
-      <div id="detail-message" class="message"></div>
-    </section>
-  </main>
+      <form id="meal-form">
+        <input id="meal-id" type="hidden">
+
+        <label for="meal-date">Date</label>
+        <input id="meal-date" type="date" required>
+
+        <label for="meal-type">Meal type</label>
+        <select id="meal-type">
+          <option value="dinner" selected>Dinner</option>
+          <option value="breakfast">Breakfast</option>
+          <option value="lunch">Lunch</option>
+          <option value="other">Other</option>
+        </select>
+
+        <label for="meal-recipe">Recipe</label>
+        <select id="meal-recipe">
+          <option value="">Custom meal</option>
+        </select>
+
+        <label for="meal-custom-name">Custom meal name</label>
+        <input id="meal-custom-name" placeholder="For example: Takeaway">
+
+        <label for="meal-servings">Servings</label>
+        <input id="meal-servings" type="number" min="1" value="2">
+
+        <label for="meal-notes">Notes</label>
+        <input id="meal-notes">
+
+        <div class="form-actions">
+          <button type="submit">Save meal</button>
+          <button type="button" class="secondary" data-close="meal-modal">
+            Cancel
+          </button>
+        </div>
+
+        <div id="meal-message" class="message"></div>
+      </form>
+    </div>
+  </div>
+
+  <div id="calendar-event-modal" class="modal-backdrop hidden">
+    <div class="modal">
+      <div class="modal-head">
+        <h2 id="calendar-event-modal-title">Add event</h2>
+        <button class="close" data-close="calendar-event-modal">×</button>
+      </div>
+
+      <form id="calendar-event-form">
+        <input id="calendar-event-id" type="hidden">
+
+        <label for="calendar-event-title">Title</label>
+        <input id="calendar-event-title" maxlength="250" required>
+
+        <label for="calendar-event-date">Date</label>
+        <input id="calendar-event-date" type="date" required>
+
+        <label>
+          <input id="calendar-event-all-day" type="checkbox" style="width:auto">
+          All-day event
+        </label>
+
+        <div id="calendar-time-fields">
+          <label for="calendar-event-start">Start time</label>
+          <input id="calendar-event-start" type="time">
+
+          <label for="calendar-event-end">End time</label>
+          <input id="calendar-event-end" type="time">
+        </div>
+
+        <label for="calendar-event-location">Location</label>
+        <input id="calendar-event-location">
+
+        <label for="calendar-event-category">Category</label>
+        <select id="calendar-event-category">
+          <option value="Other">Other</option>
+          <option value="Family">Family</option>
+          <option value="School">School</option>
+          <option value="Work">Work</option>
+          <option value="Appointment">Appointment</option>
+          <option value="Holiday">Holiday</option>
+        </select>
+
+        <label for="calendar-event-colour">Colour</label>
+        <input id="calendar-event-colour" type="color" value="#ef8b2c">
+
+        <label for="calendar-event-description">Description</label>
+        <textarea id="calendar-event-description"></textarea>
+
+        <div class="form-actions">
+          <button type="submit">Save event</button>
+          <button type="button" id="delete-calendar-event" class="danger hidden">
+            Delete
+          </button>
+          <button type="button" class="secondary" data-close="calendar-event-modal">
+            Cancel
+          </button>
+        </div>
+
+        <div id="calendar-event-message" class="message"></div>
+      </form>
+    </div>
+  </div>
 
   <script>
-    const viewIds = [
-      "auth-view",
-      "dashboard-view",
-      "recipes-view",
-      "recipe-form-view",
-      "detail-view"
-    ];
+    const $ = id => document.getElementById(id);
 
     let currentUser = null;
-    let selectedRecipeId = null;
-    let editingRecipeId = null;
+    let recipes = [];
+    let plannerOffset = 0;
+    let calendarOffset = 0;
+    let calendarEvents = [];
+    let calendarMeals = [];
 
-    function showView(viewId) {
-      viewIds.forEach(id => {
-        document.getElementById(id).classList.toggle(
-          "hidden",
-          id !== viewId
-        );
-      });
-
-      document.getElementById("logout-button").classList.toggle(
-        "hidden",
-        viewId === "auth-view"
-      );
-    }
-
-    async function request(url, options = {}) {
-      const response = await fetch(url, {
-        ...options,
-        credentials: "same-origin",
+    async function api(path, options = {}) {
+      const response = await fetch(path, {
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           ...(options.headers || {})
-        }
+        },
+        ...options
       });
 
-      const data = await response.json().catch(() => ({}));
+      let data = null;
+
+      try {
+        data = await response.json();
+      } catch {
+        data = null;
+      }
 
       if (!response.ok) {
-        throw new Error(data.detail || "Request failed");
+        const detail =
+          data?.detail ||
+          data?.message ||
+          (Array.isArray(data)
+            ? data.map(item => item.msg || JSON.stringify(item)).join(", ")
+            : null) ||
+          `Request failed with status ${response.status}`;
+
+        throw new Error(detail);
       }
 
       return data;
     }
 
-    function showLoginForm() {
-      document.getElementById("login-form").classList.remove("hidden");
-      document.getElementById("register-form").classList.add("hidden");
-      document.getElementById("login-tab").classList.remove("secondary");
-      document.getElementById("register-tab").classList.add("secondary");
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
     }
 
-    function showRegisterForm() {
-      document.getElementById("login-form").classList.add("hidden");
-      document.getElementById("register-form").classList.remove("hidden");
-      document.getElementById("login-tab").classList.add("secondary");
-      document.getElementById("register-tab").classList.remove("secondary");
+    function dateKey(date) {
+      return date.toISOString().slice(0, 10);
     }
 
-    function showDashboard(user) {
-      currentUser = user;
-      document.getElementById("user-name").textContent = user.name;
-      showView("dashboard-view");
+    function localDateKey(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+
+      return `${year}-${month}-${day}`;
     }
 
-    async function loadRecipes() {
-      const list = document.getElementById("recipe-list");
-      const message = document.getElementById("recipe-list-message");
-      const search = document.getElementById("recipe-search").value.trim();
+    function parseDate(value) {
+      const parts = String(value).slice(0, 10).split("-");
 
-      list.innerHTML = "";
-      message.textContent = "Loading recipes...";
+      return new Date(
+        Number(parts[0]),
+        Number(parts[1]) - 1,
+        Number(parts[2]),
+        12
+      );
+    }
 
-      try {
-        const data = await request(
-          `/api/recipes?search=${encodeURIComponent(search)}`
-        );
+    function formatDate(date) {
+      return date.toLocaleDateString(undefined, {
+        day: "numeric",
+        month: "short"
+      });
+    }
 
-        message.textContent = "";
+    function recipeName(recipe) {
+      return recipe.title || recipe.name || "Untitled recipe";
+    }
 
-        if (!data.recipes.length) {
-          list.innerHTML = `
-            <div class="empty-state">
-              No recipes found. Click “New recipe” to add one.
-            </div>
-          `;
-          return;
-        }
+    function showView(id) {
+      document.querySelectorAll("main .page").forEach(page => {
+        page.classList.add("hidden");
+      });
 
-        data.recipes.forEach(recipe => {
-          const card = document.createElement("article");
-          card.className = "recipe-card";
+      $(id).classList.remove("hidden");
 
-          const title = document.createElement("h3");
-          title.textContent = recipe.title;
-          title.addEventListener("click", () => showRecipe(recipe.id));
+      document.querySelectorAll(".nav-button[data-view]").forEach(button => {
+        button.classList.toggle("active", button.dataset.view === id);
+      });
 
-          const description = document.createElement("p");
-          description.textContent = recipe.description || "No description";
-
-          const meta = document.createElement("div");
-          meta.className = "recipe-meta";
-          meta.textContent = `Serves ${recipe.servings}`;
-
-          card.append(title, description, meta);
-          list.appendChild(card);
-        });
-      } catch (error) {
-        message.textContent = error.message;
+      if (id === "dashboard-view") {
+        loadDashboard();
       }
-    }
 
-    async function showRecipes() {
-      showView("recipes-view");
-      await loadRecipes();
-    }
+      if (id === "recipes-view") {
+        loadRecipes();
+      }
 
-    async function showRecipe(id) {
-      selectedRecipeId = id;
-      showView("detail-view");
+      if (id === "planner-view") {
+        loadPlanner();
+      }
 
-      const message = document.getElementById("detail-message");
-      message.textContent = "Loading recipe...";
+      if (id === "shopping-view") {
+        loadShopping();
+      }
 
-      try {
-        const recipe = await request(`/api/recipes/${id}`);
-
-        document.getElementById("detail-title").textContent = recipe.title;
-        document.getElementById("detail-description").textContent =
-          recipe.description || "No description";
-
-        const ingredients = document.getElementById("detail-ingredients");
-        ingredients.innerHTML = "";
-
-        recipe.ingredients.forEach(item => {
-          const li = document.createElement("li");
-          li.textContent = [item.quantity, item.unit, item.name]
-            .filter(Boolean)
-            .join(" ");
-          ingredients.appendChild(li);
-        });
-
-        const instructions = document.getElementById("detail-instructions");
-        instructions.innerHTML = "";
-
-        recipe.instructions.forEach(item => {
-          const li = document.createElement("li");
-          li.textContent = item.instruction;
-          instructions.appendChild(li);
-        });
-
-        message.textContent = "";
-      } catch (error) {
-        message.textContent = error.message;
+      if (id === "calendar-view") {
+        loadCalendar();
       }
     }
 
-    async function openEditForm(id) {
-      try {
-        const recipe = await request(`/api/recipes/${id}`);
-
-        editingRecipeId = id;
-
-        document.getElementById("form-title").textContent = "Edit recipe";
-        document.getElementById("form-subtitle").textContent =
-          "Update this household recipe.";
-
-        document.getElementById("recipe-title").value = recipe.title;
-        document.getElementById("recipe-description").value =
-          recipe.description || "";
-        document.getElementById("recipe-servings").value = recipe.servings;
-        document.getElementById("recipe-prep").value =
-          recipe.prep_time_minutes ?? "";
-        document.getElementById("recipe-cook").value =
-          recipe.cook_time_minutes ?? "";
-        document.getElementById("recipe-source").value =
-          recipe.source_url || "";
-
-        document.getElementById("recipe-ingredients").value =
-          recipe.ingredients
-            .map(item =>
-              [item.quantity, item.unit, item.name]
-                .filter(Boolean)
-                .join("|")
-            )
-            .join("\n");
-
-        document.getElementById("recipe-instructions").value =
-          recipe.instructions
-            .map(item => item.instruction)
-            .join("\n");
-
-        document.getElementById("form-message").textContent = "";
-        showView("recipe-form-view");
-      } catch (error) {
-        document.getElementById("detail-message").textContent =
-          error.message;
-      }
+    function openModal(id) {
+      $(id).classList.remove("hidden");
     }
 
-    function openNewRecipeForm() {
-      editingRecipeId = null;
-
-      document.getElementById("recipe-form").reset();
-      document.getElementById("recipe-servings").value = 4;
-      document.getElementById("form-title").textContent = "New recipe";
-      document.getElementById("form-subtitle").textContent =
-        "Add a recipe to your household collection.";
-      document.getElementById("form-message").textContent = "";
-
-      showView("recipe-form-view");
-    }
-
-    function parseIngredients() {
-      return document
-        .getElementById("recipe-ingredients")
-        .value
-        .split("\n")
-        .map(line => line.trim())
-        .filter(Boolean)
-        .map(line => {
-          const parts = line.split("|");
-
-          return {
-            quantity: (parts[0] || "").trim(),
-            unit: (parts[1] || "").trim(),
-            name: parts.slice(2).join("|").trim()
-          };
-        })
-        .filter(item => item.name);
-    }
-
-    function parseInstructions() {
-      return document
-        .getElementById("recipe-instructions")
-        .value
-        .split("\n")
-        .map(line => line.trim())
-        .filter(Boolean)
-        .map(instruction => ({ instruction }));
-    }
-
-    document.getElementById("login-tab").addEventListener(
-      "click",
-      showLoginForm
-    );
-
-    document.getElementById("register-tab").addEventListener(
-      "click",
-      showRegisterForm
-    );
-
-    document.getElementById("login-form").addEventListener(
-      "submit",
-      async event => {
-        event.preventDefault();
-
-        const message = document.getElementById("login-message");
-        message.textContent = "Logging in...";
-
-        try {
-          const data = await request("/api/auth/login", {
-            method: "POST",
-            body: JSON.stringify({
-              email: document.getElementById("login-email").value,
-              password: document.getElementById("login-password").value
-            })
-          });
-
-          message.textContent = "";
-          showDashboard(data.user);
-        } catch (error) {
-          message.textContent = error.message;
-        }
-      }
-    );
-
-    document.getElementById("register-form").addEventListener(
-      "submit",
-      async event => {
-        event.preventDefault();
-
-        const message = document.getElementById("register-message");
-        message.textContent = "Creating account...";
-
-        try {
-          const data = await request("/api/auth/register", {
-            method: "POST",
-            body: JSON.stringify({
-              name: document.getElementById("register-name").value,
-              email: document.getElementById("register-email").value,
-              password: document.getElementById("register-password").value,
-              household_name:
-                document.getElementById("household-name").value
-            })
-          });
-
-          message.textContent = "";
-          showDashboard(data.user);
-        } catch (error) {
-          message.textContent = error.message;
-        }
-      }
-    );
-
-    document.getElementById("recipes-card").addEventListener(
-      "click",
-      showRecipes
-    );
-
-    document.getElementById("dashboard-button").addEventListener(
-      "click",
-      () => showDashboard(currentUser)
-    );
-
-    document.getElementById("new-recipe-button").addEventListener(
-      "click",
-      openNewRecipeForm
-    );
-
-    document.getElementById("cancel-button").addEventListener(
-      "click",
-      showRecipes
-    );
-
-    document.getElementById("search-button").addEventListener(
-      "click",
-      loadRecipes
-    );
-
-    document.getElementById("recipe-search").addEventListener(
-      "keydown",
-      event => {
-        if (event.key === "Enter") {
-          event.preventDefault();
-          loadRecipes();
-        }
-      }
-    );
-
-    document.getElementById("recipe-form").addEventListener(
-      "submit",
-      async event => {
-        event.preventDefault();
-
-        const message = document.getElementById("form-message");
-        message.textContent = "Saving recipe...";
-
-        const recipeData = {
-          title: document.getElementById("recipe-title").value,
-          description:
-            document.getElementById("recipe-description").value,
-          servings: Number(
-            document.getElementById("recipe-servings").value
-          ),
-          prep_time_minutes: document.getElementById("recipe-prep").value
-            ? Number(document.getElementById("recipe-prep").value)
-            : null,
-          cook_time_minutes: document.getElementById("recipe-cook").value
-            ? Number(document.getElementById("recipe-cook").value)
-            : null,
-          source_url:
-            document.getElementById("recipe-source").value || null,
-          ingredients: parseIngredients(),
-          instructions: parseInstructions()
-        };
-
-        try {
-          const url = editingRecipeId
-            ? `/api/recipes/${editingRecipeId}`
-            : "/api/recipes";
-
-          const recipe = await request(url, {
-            method: editingRecipeId ? "PUT" : "POST",
-            body: JSON.stringify(recipeData)
-          });
-
-          await showRecipe(recipe.id);
-        } catch (error) {
-          message.textContent = error.message;
-        }
-      }
-    );
-
-    document.getElementById("back-button").addEventListener(
-      "click",
-      showRecipes
-    );
-
-    document.getElementById("edit-button").addEventListener(
-      "click",
-      () => {
-        if (selectedRecipeId) {
-          openEditForm(selectedRecipeId);
-        }
-      }
-    );
-
-    document.getElementById("delete-button").addEventListener(
-      "click",
-      async () => {
-        if (!selectedRecipeId) return;
-        if (!confirm("Delete this recipe?")) return;
-
-        try {
-          await request(`/api/recipes/${selectedRecipeId}`, {
-            method: "DELETE"
-          });
-
-          await showRecipes();
-        } catch (error) {
-          document.getElementById("detail-message").textContent =
-            error.message;
-        }
-      }
-    );
-
-    document.getElementById("logout-button").addEventListener(
-      "click",
-      async () => {
-        await request("/api/auth/logout", { method: "POST" });
-        currentUser = null;
-        selectedRecipeId = null;
-        editingRecipeId = null;
-        showView("auth-view");
-        showLoginForm();
-      }
-    );
-
-    document.getElementById("theme-button").addEventListener(
-      "click",
-      () => {
-        const current =
-          document.documentElement.getAttribute("data-theme");
-
-        const next = current === "dark" ? "light" : "dark";
-
-        document.documentElement.setAttribute("data-theme", next);
-        localStorage.setItem("wilfordspace-theme", next);
-      }
-    );
-
-    const savedTheme = localStorage.getItem("wilfordspace-theme");
-
-    if (savedTheme) {
-      document.documentElement.setAttribute("data-theme", savedTheme);
+    function closeModal(id) {
+      $(id).classList.add("hidden");
     }
 
     async function checkSession() {
       try {
-        const data = await request("/api/auth/me");
-        showDashboard(data.user);
+        const data = await api("/api/auth/me");
+
+        currentUser = data.user || data;
+
+        $("auth-screen").classList.add("hidden");
+        $("app").classList.remove("hidden");
+
+        $("user-box").textContent =
+          currentUser.name ||
+          currentUser.full_name ||
+          currentUser.email ||
+          "";
+
+        showView("dashboard-view");
       } catch {
-        showView("auth-view");
-        showLoginForm();
+        $("auth-screen").classList.remove("hidden");
+        $("app").classList.add("hidden");
       }
     }
 
+    async function loadDashboard() {
+      try {
+        const data = await api("/api/recipes");
+        const list = data.recipes || data || [];
+
+        $("dashboard-recipe-count").textContent =
+          `${list.length} recipe${list.length === 1 ? "" : "s"} saved`;
+      } catch {
+        $("dashboard-recipe-count").textContent = "Unable to load recipes";
+      }
+    }
+
+    async function loadRecipes() {
+      try {
+        const data = await api("/api/recipes");
+
+        recipes = data.recipes || data || [];
+
+        renderRecipes();
+      } catch (error) {
+        $("recipe-message").textContent = error.message;
+      }
+    }
+
+    function renderRecipes() {
+      const search = $("recipe-search").value.trim().toLowerCase();
+
+      const visible = recipes.filter(recipe => {
+        return [
+          recipeName(recipe),
+          recipe.description,
+          recipe.source_url
+        ].join(" ").toLowerCase().includes(search);
+      });
+
+      if (!visible.length) {
+        $("recipe-list").innerHTML =
+          `<div class="empty">No recipes found.</div>`;
+        return;
+      }
+
+      $("recipe-list").innerHTML = visible.map(recipe => `
+        <article class="recipe-card">
+          ${
+            recipe.image_url
+              ? `<img class="recipe-card-image" src="${escapeHtml(recipe.image_url)}" alt="">`
+              : `<div class="recipe-card-image"></div>`
+          }
+
+          <div class="recipe-card-content">
+            <h3>${escapeHtml(recipeName(recipe))}</h3>
+            <p>${escapeHtml(recipe.description || "")}</p>
+
+            <div class="meta">
+              ${
+                recipe.servings
+                  ? `<span class="pill">${recipe.servings} servings</span>`
+                  : ""
+              }
+            </div>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function mondayOfWeek(offset = 0) {
+      const date = new Date();
+      const day = date.getDay();
+      const difference = day === 0 ? -6 : 1 - day;
+
+      date.setHours(12, 0, 0, 0);
+      date.setDate(date.getDate() + difference + offset * 7);
+
+      return date;
+    }
+
+    async function loadPlanner() {
+      const monday = mondayOfWeek(plannerOffset);
+      const end = new Date(monday);
+
+      end.setDate(end.getDate() + 6);
+
+      $("planner-week").textContent =
+        `${formatDate(monday)} – ${formatDate(end)}`;
+
+      $("planner-grid").innerHTML = "Loading...";
+
+      try {
+        const data = await api(
+          `/api/meal-plan?start_date=${localDateKey(monday)}&end_date=${localDateKey(end)}`
+        );
+
+        renderPlanner(monday, data.meals || data || []);
+      } catch (error) {
+        $("planner-message").textContent = error.message;
+      }
+    }
+
+    function renderPlanner(monday, meals) {
+      const today = localDateKey(new Date());
+
+      $("planner-grid").innerHTML = Array.from(
+        { length: 7 },
+        (_, index) => {
+          const day = new Date(monday);
+
+          day.setDate(day.getDate() + index);
+
+          const key = localDateKey(day);
+
+          const dayMeals = meals.filter(meal => {
+            return String(meal.date || meal.meal_date).slice(0, 10) === key;
+          });
+
+          return `
+            <div class="planner-day ${key === today ? "today" : ""}">
+              <div class="planner-day-title">
+                ${day.toLocaleDateString(undefined, {
+                  weekday: "short"
+                })}
+
+                <div class="planner-date">${formatDate(day)}</div>
+              </div>
+
+              ${dayMeals.map(meal => `
+                <div class="meal">
+                  <div class="meal-type">
+                    ${escapeHtml(meal.meal_type || "dinner")}
+                  </div>
+
+                  <strong>
+                    ${escapeHtml(
+                      meal.recipe?.title ||
+                      meal.recipe?.name ||
+                      meal.custom_name ||
+                      meal.title ||
+                      "Meal"
+                    )}
+                  </strong>
+
+                  <div class="meal-actions">
+                    <button
+                      class="small danger delete-meal"
+                      data-id="${meal.id}"
+                      data-date="${key}"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              `).join("")}
+
+              <button
+                class="small secondary add-day-meal"
+                data-date="${key}"
+                style="width:100%;margin-top:10px"
+              >
+                + Add
+              </button>
+            </div>
+          `;
+        }
+      ).join("");
+
+      document.querySelectorAll(".add-day-meal").forEach(button => {
+        button.onclick = () => openMealEditor(button.dataset.date);
+      });
+
+      document.querySelectorAll(".delete-meal").forEach(button => {
+        button.onclick = async () => {
+          if (!confirm("Delete this meal?")) {
+            return;
+          }
+
+          const mealDate = parseDate(button.dataset.date);
+
+          try {
+            await api(`/api/meal-plan/${button.dataset.id}`, {
+              method: "DELETE"
+            });
+
+            const weekStart = new Date(mealDate);
+
+            weekStart.setDate(
+              weekStart.getDate() - (weekStart.getDay() === 0
+                ? 6
+                : weekStart.getDay() - 1)
+            );
+
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekEnd.getDate() + 6);
+
+            await api("/api/shopping-list/generate", {
+              method: "POST",
+              body: JSON.stringify({
+                start_date: localDateKey(weekStart),
+                end_date: localDateKey(weekEnd)
+              })
+            });
+
+            await loadPlanner();
+          } catch (error) {
+            $("planner-message").textContent = error.message;
+          }
+        };
+      });
+    }
+
+    async function openMealEditor(date = null) {
+      $("meal-form").reset();
+
+      $("meal-date").value =
+        date || localDateKey(new Date());
+
+      $("meal-servings").value = 2;
+      $("meal-message").textContent = "";
+
+      if (!recipes.length) {
+        const data = await api("/api/recipes");
+        recipes = data.recipes || data || [];
+      }
+
+      $("meal-recipe").innerHTML =
+        `<option value="">Custom meal</option>` +
+        recipes.map(recipe => `
+          <option value="${recipe.id}">
+            ${escapeHtml(recipeName(recipe))}
+          </option>
+        `).join("");
+
+      openModal("meal-modal");
+    }
+
+    async function saveMeal(event) {
+      event.preventDefault();
+
+      const selectedDate = $("meal-date").value;
+
+      const payload = {
+        date: selectedDate,
+        meal_type: $("meal-type").value,
+        recipe_id: $("meal-recipe").value
+          ? Number($("meal-recipe").value)
+          : null,
+        custom_name: $("meal-custom-name").value.trim() || null,
+        servings: Number($("meal-servings").value) || 2,
+        notes: $("meal-notes").value.trim() || null
+      };
+
+      try {
+        await api("/api/meal-plan", {
+          method: "POST",
+          body: JSON.stringify(payload)
+        });
+
+        await api("/api/shopping-list/generate", {
+          method: "POST",
+          body: JSON.stringify({
+            start_date: selectedDate,
+            end_date: selectedDate
+          })
+        });
+
+        closeModal("meal-modal");
+        await loadPlanner();
+      } catch (error) {
+        $("meal-message").textContent =
+          error.message || "Unable to save meal.";
+      }
+    }
+
+    async function loadShopping() {
+      $("shopping-list").innerHTML = "";
+      $("shopping-message").textContent = "Loading shopping list...";
+
+      try {
+        const data = await api("/api/shopping-list");
+        const items = data.items || data || [];
+
+        $("shopping-message").textContent = "";
+
+        const remaining = items.filter(item => !item.purchased).length;
+
+        $("shopping-count").textContent =
+          `${remaining} item${remaining === 1 ? "" : "s"} remaining`;
+
+        if (!items.length) {
+          $("shopping-list").innerHTML =
+            `<div class="shopping-empty">Your shopping list is empty.</div>`;
+          return;
+        }
+
+        const groups = {};
+
+        items.forEach(item => {
+          const category = item.category || "Other";
+
+          if (!groups[category]) {
+            groups[category] = [];
+          }
+
+          groups[category].push(item);
+        });
+
+        Object.keys(groups).sort().forEach(category => {
+          const section = document.createElement("section");
+
+          section.className = "shopping-category";
+
+          const header = document.createElement("button");
+
+          header.className = "shopping-category-header";
+          header.innerHTML = `
+            <span>${escapeHtml(category)}</span>
+            <span class="shopping-category-arrow">⌃</span>
+          `;
+
+          header.onclick = () => {
+            section.classList.toggle("collapsed");
+          };
+
+          const itemContainer = document.createElement("div");
+
+          itemContainer.className = "shopping-items";
+
+          groups[category]
+            .sort((a, b) => Number(a.purchased) - Number(b.purchased))
+            .forEach(item => {
+              const row = document.createElement("div");
+
+              row.className = "shopping-item";
+
+              if (item.purchased) {
+                row.classList.add("purchased");
+              }
+
+              const checkbox = document.createElement("input");
+
+              checkbox.type = "checkbox";
+              checkbox.checked = Boolean(item.purchased);
+
+              checkbox.onchange = async () => {
+                await api(`/api/shopping-list/items/${item.id}`, {
+                  method: "PUT",
+                  body: JSON.stringify({
+                    name: item.name,
+                    quantity: item.quantity,
+                    category: item.category,
+                    notes: item.notes,
+                    purchased: checkbox.checked
+                  })
+                });
+
+                loadShopping();
+              };
+
+              const text = document.createElement("div");
+
+              text.className = "shopping-item-text";
+              text.textContent = [
+                item.quantity,
+                item.name,
+                item.notes ? `— ${item.notes}` : ""
+              ].filter(Boolean).join(" ");
+
+              const actions = document.createElement("div");
+
+              actions.className = "shopping-item-actions";
+
+              const remove = document.createElement("button");
+
+              remove.textContent = "×";
+              remove.title = "Delete item";
+
+              remove.onclick = async () => {
+                if (!confirm(`Delete "${item.name}"?`)) {
+                  return;
+                }
+
+                await api(`/api/shopping-list/items/${item.id}`, {
+                  method: "DELETE"
+                });
+
+                loadShopping();
+              };
+
+              actions.appendChild(remove);
+              row.append(checkbox, text, actions);
+              itemContainer.appendChild(row);
+            });
+
+          section.append(header, itemContainer);
+          $("shopping-list").appendChild(section);
+        });
+      } catch (error) {
+        $("shopping-message").textContent = error.message;
+      }
+    }
+
+    async function saveShoppingItem() {
+      const name = $("shopping-name").value.trim();
+
+      if (!name) {
+        $("shopping-message").textContent =
+          "Please enter an item name.";
+        return;
+      }
+
+      try {
+        await api("/api/shopping-list/items", {
+          method: "POST",
+          body: JSON.stringify({
+            name,
+            quantity: $("shopping-quantity").value.trim(),
+            category: $("shopping-category").value,
+            notes: $("shopping-notes").value.trim(),
+            purchased: false
+          })
+        });
+
+        closeShoppingForm();
+        loadShopping();
+      } catch (error) {
+        $("shopping-message").textContent = error.message;
+      }
+    }
+
+    async function generateShoppingList() {
+      $("shopping-message").textContent =
+        "Generating from meal plan...";
+
+      try {
+        const monday = mondayOfWeek(0);
+        const end = new Date(monday);
+
+        end.setDate(end.getDate() + 6);
+
+        await api("/api/shopping-list/generate", {
+          method: "POST",
+          body: JSON.stringify({
+            start_date: localDateKey(monday),
+            end_date: localDateKey(end)
+          })
+        });
+
+        loadShopping();
+      } catch (error) {
+        $("shopping-message").textContent = error.message;
+      }
+    }
+
+    function calendarMonthDate() {
+      const date = new Date();
+
+      return new Date(
+        date.getFullYear(),
+        date.getMonth() + calendarOffset,
+        1,
+        12
+      );
+    }
+
+    async function loadCalendar() {
+      const month = calendarMonthDate();
+      const start = new Date(month.getFullYear(), month.getMonth(), 1, 12);
+      const end = new Date(month.getFullYear(), month.getMonth() + 1, 0, 12);
+
+      $("calendar-month-title").textContent =
+        month.toLocaleDateString(undefined, {
+          month: "long",
+          year: "numeric"
+        });
+
+      $("calendar-grid").innerHTML = "Loading...";
+
+      try {
+        const calendarData = await api(
+          `/api/calendar/events?start_date=${localDateKey(start)}&end_date=${localDateKey(end)}`
+        );
+
+        const mealsData = await api(
+          `/api/meal-plan?start_date=${localDateKey(start)}&end_date=${localDateKey(end)}`
+        );
+
+        calendarEvents = calendarData.events || [];
+        calendarMeals = mealsData.meals || [];
+
+        renderCalendar(month);
+      } catch (error) {
+        $("calendar-message").textContent = error.message;
+      }
+    }
+
+    function renderCalendar(month) {
+      const firstDay = new Date(
+        month.getFullYear(),
+        month.getMonth(),
+        1,
+        12
+      );
+
+      const lastDay = new Date(
+        month.getFullYear(),
+        month.getMonth() + 1,
+        0,
+        12
+      );
+
+      const gridStart = new Date(firstDay);
+      gridStart.setDate(firstDay.getDate() - firstDay.getDay());
+
+      const gridEnd = new Date(lastDay);
+      gridEnd.setDate(lastDay.getDate() + (6 - lastDay.getDay()));
+
+      const today = localDateKey(new Date());
+      const cells = [];
+
+      for (
+        const day = new Date(gridStart);
+        day <= gridEnd;
+        day.setDate(day.getDate() + 1)
+      ) {
+        const key = localDateKey(day);
+        const inMonth = day.getMonth() === month.getMonth();
+
+        const events = calendarEvents.filter(event => {
+          return String(event.event_date).slice(0, 10) === key;
+        });
+
+        const meals = calendarMeals.filter(meal => {
+          return String(meal.date || meal.meal_date).slice(0, 10) === key;
+        });
+
+        cells.push(`
+          <div
+            class="calendar-day ${inMonth ? "" : "other-month"} ${key === today ? "today" : ""}"
+            data-date="${key}"
+          >
+            <div class="calendar-day-number">${day.getDate()}</div>
+
+            ${events.map(event => `
+              <div
+                class="calendar-event"
+                data-event-id="${event.id}"
+                style="background:${escapeHtml(event.colour || "#ef8b2c")}"
+                title="${escapeHtml(event.description || event.title)}"
+              >
+                ${
+                  event.all_day
+                    ? ""
+                    : `<span class="calendar-event-time">${escapeHtml(event.start_time || "")}</span> `
+                }
+                ${escapeHtml(event.title)}
+              </div>
+            `).join("")}
+
+            ${meals.map(meal => `
+              <div class="calendar-event meal-event">
+                Meal:
+                ${escapeHtml(
+                  meal.recipe?.title ||
+                  meal.recipe?.name ||
+                  meal.custom_name ||
+                  meal.title ||
+                  "Meal"
+                )}
+              </div>
+            `).join("")}
+          </div>
+        `);
+      }
+
+      $("calendar-grid").innerHTML = cells.join("");
+
+      document.querySelectorAll(".calendar-day").forEach(day => {
+        day.onclick = event => {
+          if (event.target.closest(".calendar-event[data-event-id]")) {
+            return;
+          }
+
+          openCalendarEventEditor(null, day.dataset.date);
+        };
+      });
+
+      document.querySelectorAll(".calendar-event[data-event-id]").forEach(item => {
+        item.onclick = event => {
+          event.stopPropagation();
+
+          const selected = calendarEvents.find(event => {
+            return String(event.id) === String(item.dataset.eventId);
+          });
+
+          openCalendarEventEditor(selected);
+        };
+      });
+    }
+
+    function openCalendarEventEditor(event = null, selectedDate = null) {
+      $("calendar-event-form").reset();
+
+      $("calendar-event-id").value = event?.id || "";
+      $("calendar-event-title").value = event?.title || "";
+      $("calendar-event-date").value =
+        event?.event_date?.slice(0, 10) ||
+        selectedDate ||
+        localDateKey(new Date());
+
+      $("calendar-event-description").value =
+        event?.description || "";
+
+      $("calendar-event-start").value =
+        event?.start_time || "";
+
+      $("calendar-event-end").value =
+        event?.end_time || "";
+
+      $("calendar-event-location").value =
+        event?.location || "";
+
+      $("calendar-event-category").value =
+        event?.category || "Other";
+
+      $("calendar-event-colour").value =
+        event?.colour || "#ef8b2c";
+
+      $("calendar-event-all-day").checked =
+        Boolean(event?.all_day);
+
+      $("calendar-event-modal-title").textContent =
+        event ? "Edit event" : "Add event";
+
+      $("delete-calendar-event").classList.toggle(
+        "hidden",
+        !event
+      );
+
+      $("calendar-event-message").textContent = "";
+      toggleCalendarTimes();
+      openModal("calendar-event-modal");
+    }
+
+    function toggleCalendarTimes() {
+      $("calendar-time-fields").classList.toggle(
+        "hidden",
+        $("calendar-event-all-day").checked
+      );
+    }
+
+    async function saveCalendarEvent(event) {
+      event.preventDefault();
+
+      const id = $("calendar-event-id").value;
+
+      const payload = {
+        title: $("calendar-event-title").value.trim(),
+        description: $("calendar-event-description").value.trim(),
+        event_date: $("calendar-event-date").value,
+        start_time: $("calendar-event-all-day").checked
+          ? null
+          : $("calendar-event-start").value || null,
+        end_time: $("calendar-event-all-day").checked
+          ? null
+          : $("calendar-event-end").value || null,
+        all_day: $("calendar-event-all-day").checked,
+        location: $("calendar-event-location").value.trim(),
+        category: $("calendar-event-category").value,
+        colour: $("calendar-event-colour").value
+      };
+
+      try {
+        await api(
+          id
+            ? `/api/calendar/events/${id}`
+            : "/api/calendar/events",
+          {
+            method: id ? "PUT" : "POST",
+            body: JSON.stringify(payload)
+          }
+        );
+
+        closeModal("calendar-event-modal");
+        await loadCalendar();
+      } catch (error) {
+        $("calendar-event-message").textContent = error.message;
+      }
+    }
+
+    async function deleteCalendarEvent() {
+      const id = $("calendar-event-id").value;
+
+      if (!id || !confirm("Delete this calendar event?")) {
+        return;
+      }
+
+      try {
+        await api(`/api/calendar/events/${id}`, {
+          method: "DELETE"
+        });
+
+        closeModal("calendar-event-modal");
+        await loadCalendar();
+      } catch (error) {
+        $("calendar-event-message").textContent = error.message;
+      }
+    }
+
+    async function login(event) {
+      event.preventDefault();
+
+      try {
+        await api("/api/auth/login", {
+          method: "POST",
+          body: JSON.stringify({
+            email: $("login-email").value.trim(),
+            password: $("login-password").value
+          })
+        });
+
+        await checkSession();
+      } catch (error) {
+        $("login-message").textContent = error.message;
+      }
+    }
+
+    async function register(event) {
+      event.preventDefault();
+
+      try {
+        await api("/api/auth/register", {
+          method: "POST",
+          body: JSON.stringify({
+            name: $("register-name").value.trim(),
+            email: $("register-email").value.trim(),
+            password: $("register-password").value,
+            household_name: $("register-household").value.trim()
+          })
+        });
+
+        await checkSession();
+      } catch (error) {
+        $("register-message").textContent = error.message;
+      }
+    }
+
+    $("login-form").onsubmit = login;
+    $("register-form").onsubmit = register;
+    $("meal-form").onsubmit = saveMeal;
+    $("calendar-event-form").onsubmit = saveCalendarEvent;
+
+    $("show-register").onclick = () => {
+      $("login-form").classList.add("hidden");
+      $("register-form").classList.remove("hidden");
+    };
+
+    $("show-login").onclick = () => {
+      $("register-form").classList.add("hidden");
+      $("login-form").classList.remove("hidden");
+    };
+
+    $("logout-button").onclick = async () => {
+      await api("/api/auth/logout", {
+        method: "POST"
+      });
+
+      currentUser = null;
+      $("app").classList.add("hidden");
+      $("auth-screen").classList.remove("hidden");
+    };
+
+    $("theme-button").onclick = () => {
+      const current = document.documentElement.dataset.theme;
+      const next = current === "light" ? "dark" : "light";
+
+      document.documentElement.dataset.theme = next;
+      localStorage.setItem("wilfordspace-theme", next);
+    };
+
+    $("recipe-search").oninput = renderRecipes;
+
+    $("previous-week").onclick = () => {
+      plannerOffset--;
+      loadPlanner();
+    };
+
+    $("next-week").onclick = () => {
+      plannerOffset++;
+      loadPlanner();
+    };
+
+    $("new-meal-button").onclick = () => openMealEditor();
+
+    $("add-shopping").onclick = () => {
+      $("shopping-form").classList.remove("hidden");
+      $("shopping-name").focus();
+    };
+
+    $("shopping-add-bar").onclick = () => {
+      $("shopping-form").classList.remove("hidden");
+      $("shopping-name").focus();
+    };
+
+    $("cancel-shopping").onclick = () => {
+      $("shopping-form").classList.add("hidden");
+      $("shopping-name").value = "";
+      $("shopping-quantity").value = "";
+      $("shopping-notes").value = "";
+    };
+
+    $("save-shopping").onclick = saveShoppingItem;
+    $("generate-shopping").onclick = generateShoppingList;
+
+    $("previous-month").onclick = () => {
+      calendarOffset--;
+      loadCalendar();
+    };
+
+    $("next-month").onclick = () => {
+      calendarOffset++;
+      loadCalendar();
+    };
+
+    $("new-calendar-event").onclick = () => {
+      openCalendarEventEditor();
+    };
+
+    $("delete-calendar-event").onclick = deleteCalendarEvent;
+    $("calendar-event-all-day").onchange = toggleCalendarTimes;
+
+    document.querySelectorAll("[data-close]").forEach(button => {
+      button.onclick = () => {
+        closeModal(button.dataset.close);
+      };
+    });
+
+    document.querySelectorAll("[data-view]").forEach(button => {
+      button.onclick = () => {
+        showView(button.dataset.view);
+      };
+    });
+
+    document.documentElement.dataset.theme =
+      localStorage.getItem("wilfordspace-theme") || "dark";
+
     checkSession();
   </script>
+<script src="/calendar-ui.js"></script>
+<script src="/household-ui.js"></script>
 </body>
 </html>
